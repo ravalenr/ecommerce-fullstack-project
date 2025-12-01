@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Multi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header with navigation menu -->
+    <header>
+        <div class="logo">
+          <a href="index.html"><img src="img/logotipo.png" alt="Multi Store Eletro" /></a>
+        </div>
+        <!-- Main navigation links -->
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+    </header>
+
+    <!-- Contact form section -->
+    <section id="contact-form" class="section">
+        <h2>Send Us a Message</h2>
+        <p>Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.</p>
+        
+        <!-- Contact form with validation -->
+        <form id="contactForm" onsubmit="return validateForm(event)">
+            
+            <!-- Name input field -->
+            <div class="form-group">
+                <label for="name">Full Name: *</label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    placeholder="Enter your full name"
+                >
+                <!-- Error message container for name field -->
+                <span id="nameError" class="error-message"></span>
+            </div>
+
+            <!-- Phone input field -->
+            <div class="form-group">
+                <label for="phone">Phone Number: *</label>
+                <input 
+                    type="text" 
+                    id="phone" 
+                    name="phone" 
+                    placeholder="Enter your phone number (9 or 10 digits)"
+                >
+                <!-- Error message container for phone field -->
+                <span id="phoneError" class="error-message"></span>
+            </div>
+
+            <!-- Email input field -->
+            <div class="form-group">
+                <label for="email">Email Address: *</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter your email address"
+                >
+                <!-- Error message container for email field -->
+                <span id="emailError" class="error-message"></span>
+            </div>
+
+            <!-- Query textarea field -->
+            <div class="form-group">
+                <label for="query">Nature of Query: *</label>
+                <textarea 
+                    id="query" 
+                    name="query" 
+                    rows="5" 
+                    placeholder="Please describe your inquiry or question"
+                ></textarea>
+                <!-- Error message container for query field -->
+                <span id="queryError" class="error-message"></span>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="submit-btn">Send Message</button>
+            
+            <!-- Success message container (hidden by default) -->
+            <div id="successMessage" class="success-message"></div>
+        </form>
+    </section>
+
+    <!-- Contact information section -->
+    <section id="contact" class="section">
+        <h2>Other Ways to Reach Us</h2>
+        <p>Prefer to contact us directly? You can also reach us through:</p>
+        <p><strong>E-mail:</strong> <a href="mailto:multijustforfun@gmail.com">multijustforfun@gmail.com</a></p>
+        <p><strong>WhatsApp:</strong>
+        <a href="https://api.whatsapp.com/send?phone=5511991215175&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos!" 
+        target="_blank" 
+        title="Contact us on WhatsApp">
+        <img src="img/whatsapp.png" alt="WhatsApp" width="20"> (11) 91234-5678
+        </a></p>
+        <p><strong>Address:</strong> São Paulo - SP</p>
+    </section>
+
+    <!-- WhatsApp floating button -->
+    <a href="https://api.whatsapp.com/send?phone=5511991215175&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos!" 
+        class="whatsapp-float" 
+        target="_blank" 
+        title="Contact us on WhatsApp">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="50">
+    </a>
+
+    <!-- Footer section -->
+    <footer>
+        <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for form validation -->
+    <script>
+        // Main function to validate the contact form - runs when form is submitted
+        function validateForm(event) {
+            // Avoids the default form submission
+            event.preventDefault();
+            
+            // clears any previous error messages
+            clearErrors();
+            
+            // get form field values and trim answers
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const query = document.getElementById('query').value.trim();
+            
+            // boolean to check if is valid
+            let isValid = true;
+            
+            // Validate name 
+            if (!validateName(name)) {
+                isValid = false;
+            }
+            
+            // Validate phone 
+            if (!validatePhone(phone)) {
+                isValid = false;
+            }
+            
+            // Validate email 
+            if (!validateEmail(email)) {
+                isValid = false;
+            }
+            
+            // Validate query 
+            if (!validateQuery(query)) {
+                isValid = false;
+            }
+            
+            // If all validations pass, show success message
+            if (isValid) {
+                showSuccessMessage();
+                document.getElementById('contactForm').reset();
+            }
+            return false;
+        }
+
+
+        function validateName(name) {
+            // Check if name field is empty
+            if (name === '') {
+                showError('nameError', 'Please enter your name.');
+                return false;
+            }
+            
+            // RegEx: only letters and spaces allowed
+            const namePattern = /^[a-zA-Z\s]+$/;
+            
+            // Check if name matches the pattern
+            if (!namePattern.test(name)) {
+                showError('nameError', 'Name must contain only letters and spaces (no numbers or symbols).');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validatePhone(phone) {
+            // Check if field is empty
+            if (phone === '') {
+                showError('phoneError', 'Please enter your phone number.');
+                return false;
+            }
+            
+            // RegEx: only digits allowed
+            const phonePattern = /^[0-9]+$/;
+            
+            // Check if contains only numbers
+            if (!phonePattern.test(phone)) {
+                showError('phoneError', 'Phone number must contain only numeric digits.');
+                return false;
+            }
+            
+            // Check if is 9 or 10 digits long
+            if (phone.length < 9 || phone.length > 10) {
+                showError('phoneError', 'Phone number must be 9 or 10 digits long.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validateEmail(email) {
+            // Check if field is empty
+            if (email === '') {
+                showError('emailError', 'Please enter your email address.');
+                return false;
+            }
+
+            // email pattern is also validated by html5 input type="email"
+            return true;
+        }
+
+        function validateQuery(query) {
+            // Check if field is empty
+            if (query === '') {
+                showError('queryError', 'Please describe the nature of your inquiry.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Clears all error messages from the form
+        function clearErrors() {
+            // Get elements with 'error-message'
+            const errorMessages = document.querySelectorAll('.error-message');
+
+            // Loop and hide error messages
+            errorMessages.forEach(function(error) {
+                error.textContent = '';
+                error.style.display = 'none';
+            });
+            
+            // Also hide success message when clearing errors
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'none';
+        }
+
+        // Disoplay success message, hide after 5 seconds
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = 'Thank you for your message! We will get back to you soon.';
+            successMessage.style.display = 'block';
+            
+            // Hide success message after 5 seconds
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
