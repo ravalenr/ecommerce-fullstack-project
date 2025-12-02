@@ -1,0 +1,22 @@
+# Environment Configuration - MySQL Version
+# Multi Store Eletro E-Commerce Application
+
+# Server Configuration
+NODE_ENV=development
+PORT=3000
+
+# MySQL Database Configuration
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=Pass1234!       
+DB_NAME=multistore_db
+
+# Session Configuration
+SESSION_SECRET=multi-store-eletro-secret-key-2025
+
+# File Upload Configuration
+MAX_FILE_SIZE=5242880
+ALLOWED_FILE_TYPES=image/jpeg,image/png,image/jpg,image/webp
+
+# API Configuration
+API_PREFIX=/api
