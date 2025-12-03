@@ -38,19 +38,21 @@ app.use(express.urlencoded({ extended: true }));
 // CORS configuration - Allow frontend to access API
 app.use(cors({
     origin: true, // Allow all origins in development
-    credentials: true
+    credentials: true // Allow cookies to be sent
 }));
 
-// Session configuration for cart management
+// Session configuration for authentication and cart management
 app.use(session({
-    secret: 'multi-store-eletro-secret-key-2025',
+    secret: process.env.SESSION_SECRET || 'multi-store-eletro-secret-key-2025',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Create session for guests too
     cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        httpOnly: true,
-        secure: false // Set to true in production with HTTPS
-    }
+        httpOnly: true, // Prevent XSS attacks
+        secure: false, // Set to true in production with HTTPS
+        sameSite: 'lax' // CSRF protection
+    },
+    name: 'sessionId' // Custom cookie name
 }));
 
 // Static files middleware - Serve frontend files
@@ -70,16 +72,22 @@ app.use((req, res, next) => {
 // ============================================
 
 const productRoutes = require('./routes/productRoutes');
+const authRoutes = require('./routes/authRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 // Mount routes
 app.use('/api/products', productRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({
         success: true,
         message: 'Server is running',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        authenticated: !!req.session.userId,
+        sessionId: req.session.id
     });
 });
 
@@ -90,6 +98,15 @@ app.get('/api', (req, res) => {
         message: 'Multi Store Eletro API',
         version: '1.0.0',
         endpoints: {
+            auth: {
+                register: 'POST /api/auth/register',
+                login: 'POST /api/auth/login',
+                logout: 'POST /api/auth/logout',
+                getCurrentUser: 'GET /api/auth/me',
+                updateProfile: 'PUT /api/auth/profile',
+                changePassword: 'PUT /api/auth/change-password',
+                checkStatus: 'GET /api/auth/status'
+            },
             products: {
                 getAll: 'GET /api/products',
                 getById: 'GET /api/products/:id',
@@ -101,10 +118,16 @@ app.get('/api', (req, res) => {
                 getCategories: 'GET /api/products/categories/all'
             },
             cart: {
-                info: 'Cart endpoints will be available on Day 3'
+                getCart: 'GET /api/cart',
+                addToCart: 'POST /api/cart/add',
+                updateItem: 'PUT /api/cart/update/:cart_id',
+                removeItem: 'DELETE /api/cart/remove/:cart_id',
+                clearCart: 'DELETE /api/cart/clear',
+                getCount: 'GET /api/cart/count',
+                validate: 'GET /api/cart/validate'
             },
             orders: {
-                info: 'Order endpoints will be available on Day 4'
+                info: 'Order endpoints coming soon (Day 4)'
             }
         }
     });
@@ -125,6 +148,22 @@ app.get('/products', (req, res) => {
 
 app.get('/contact', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/contact.html'));
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/login.html'));
+});
+
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/register.html'));
+});
+
+app.get('/profile', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/profile.html'));
+});
+
+app.get('/cart', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/cart.html'));
 });
 
 // ============================================
@@ -153,6 +192,12 @@ const server = app.listen(PORT, () => {
     console.log(`Server URL: http://localhost:${PORT}`);
     console.log(`API Documentation: http://localhost:${PORT}/api`);
     console.log(`Health Check: http://localhost:${PORT}/api/health`);
+    console.log('='.repeat(50));
+    console.log('Features Enabled:');
+    console.log('   Authentication System');
+    console.log('   Shopping Cart (Guest & User)');
+    console.log('   Product Management');
+    console.log('   Session Management');
     console.log('='.repeat(50));
 });
 

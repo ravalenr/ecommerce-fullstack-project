@@ -1,10 +1,10 @@
 README.md
 docs/
 .DS_Store
-.gitignore
 node_modules/
 .env   
 .vscode/
 dist/
 node_modules/
 *.log  
+*.txt
