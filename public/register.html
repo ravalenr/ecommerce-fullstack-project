@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Multi Store Eletro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Enhanced Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="img/logotipo.png" alt="Multi Store Eletro Logo" />
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="account-menu">
+                    <button class="account-btn" id="accountBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span id="accountText">Account</span>
+                    </button>
+                </div>
+                <a href="cart.html" class="cart-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                    <span class="cart-text">Cart</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Register Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h1>Create Account</h1>
+                <p class="auth-subtitle">Join us today and start shopping!</p>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="auth-form">
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            name="fullName" 
+                            placeholder="Enter your full name"
+                            required
+                        >
+                        <span class="error-message" id="fullNameError"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            required
+                        >
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <div class="password-input-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Create a password (min 6 characters)"
+                                required
+                            >
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <span class="error-message" id="passwordError"></span>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password *</label>
+                        <div class="password-input-wrapper">
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                name="confirmPassword" 
+                                placeholder="Re-enter your password"
+                                required
+                            >
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="error-message" id="confirmPasswordError"></span>
+                    </div>
+
+                    <!-- Phone (Optional) -->
+                    <div class="form-group">
+                        <label for="phone">Phone Number (Optional)</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone" 
+                            placeholder="Enter your phone number"
+                        >
+                        <span class="error-message" id="phoneError"></span>
+                    </div>
+
+                    <!-- Address (Optional) -->
+                    <div class="form-group">
+                        <label for="address">Delivery Address (Optional)</label>
+                        <textarea 
+                            id="address" 
+                            name="address" 
+                            rows="3" 
+                            placeholder="Enter your delivery address"
+                        ></textarea>
+                        <span class="error-message" id="addressError"></span>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="terms" required>
+                            <span>I agree to the <a href="#" class="link-inline">Terms & Conditions</a> and <a href="#" class="link-inline">Privacy Policy</a></span>
+                        </label>
+                        <span class="error-message" id="termsError"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="auth-btn" id="registerBtn">
+                        <span id="btnText">Create Account</span>
+                        <span id="btnLoader" class="btn-loader" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                            </svg>
+                        </span>
+                    </button>
+
+                    <!-- Error/Success Messages -->
+                    <div id="formMessage" class="form-message"></div>
+                </form>
+
+                <!-- Login Link -->
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            checkIfLoggedIn();
+            
+            // Setup form submission
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            
+            // Password strength indicator
+            document.getElementById('password').addEventListener('input', checkPasswordStrength);
+            
+            // Update cart count
+            updateCartCount();
+        });
+
+        /**
+         * Check if user is already logged in
+         */
+        async function checkIfLoggedIn() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    // User is already logged in, redirect to profile
+                    window.location.href = 'profile.html';
+                }
+            } catch (error) {
+                console.log('User not logged in');
+            }
+        }
+
+        /**
+         * Handle register form submission
+         */
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Get form data
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const termsAccepted = document.getElementById('terms').checked;
+            
+            // Validate
+            if (!validateForm(fullName, email, password, confirmPassword, phone, termsAccepted)) {
+                return;
+            }
+            
+            // Show loading state
+            setLoadingState(true);
+            
+            try {
+                // Prepare data
+                const userData = {
+                    full_name: fullName,
+                    email: email,
+                    password: password
+                };
+
+                // Add optional fields if provided
+                if (phone) userData.phone = phone;
+                if (address) userData.address = address;
+
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Registration successful
+                    showMessage('Account created successfully! Redirecting to login...', 'success');
+                    
+                    // Wait a moment then redirect to login
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    // Registration failed
+                    showMessage(data.message || 'Registration failed. Please try again.', 'error');
+                    setLoadingState(false);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage('Error connecting to server. Please try again.', 'error');
+                setLoadingState(false);
+            }
+        }
+
+        /**
+         * Validate form inputs
+         */
+        function validateForm(fullName, email, password, confirmPassword, phone, termsAccepted) {
+            let isValid = true;
+
+            // Full Name validation
+            if (!fullName) {
+                showError('fullNameError', 'Full name is required');
+                isValid = false;
+            } else if (fullName.length < 3) {
+                showError('fullNameError', 'Name must be at least 3 characters long');
+                isValid = false;
+            } else if (!/^[a-zA-Z\s]+$/.test(fullName)) {
+                showError('fullNameError', 'Name can only contain letters and spaces');
+                isValid = false;
+            }
+
+            // Email validation
+            if (!email) {
+                showError('emailError', 'Email is required');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError('emailError', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            // Password validation
+            if (!password) {
+                showError('passwordError', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters long');
+                isValid = false;
+            }
+
+            // Confirm Password validation
+            if (!confirmPassword) {
+                showError('confirmPasswordError', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('confirmPasswordError', 'Passwords do not match');
+                isValid = false;
+            }
+
+            // Phone validation (optional)
+            if (phone && !/^[0-9]{9,10}$/.test(phone)) {
+                showError('phoneError', 'Phone number must be 9 or 10 digits');
+                isValid = false;
+            }
+
+            // Terms validation
+            if (!termsAccepted) {
+                showError('termsError', 'You must accept the terms and conditions');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /**
+         * Check if email is valid
+         */
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        /**
+         * Check password strength
+         */
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (!password) {
+                strengthDiv.innerHTML = '';
+                return;
+            }
+
+            let strength = 0;
+            let feedback = [];
+
+            // Length check
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+
+            // Character variety checks
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            let strengthText = '';
+            let strengthClass = '';
+
+            if (strength <= 2) {
+                strengthText = 'Weak';
+                strengthClass = 'weak';
+            } else if (strength <= 4) {
+                strengthText = 'Medium';
+                strengthClass = 'medium';
+            } else {
+                strengthText = 'Strong';
+                strengthClass = 'strong';
+            }
+
+            strengthDiv.innerHTML = `<span class="strength-indicator ${strengthClass}">Password Strength: ${strengthText}</span>`;
+        }
+
+        /**
+         * Toggle password visibility
+         */
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        /**
+         * Show error message under field
+         */
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        /**
+         * Clear all errors
+         */
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
+            });
+            document.getElementById('formMessage').textContent = '';
+            document.getElementById('formMessage').className = 'form-message';
+        }
+
+        /**
+         * Show form message
+         */
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('formMessage');
+            messageEl.textContent = message;
+            messageEl.className = `form-message ${type}`;
+            messageEl.style.display = 'block';
+            
+            // Scroll to message
+            messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        /**
+         * Set loading state
+         */
+        function setLoadingState(loading) {
+            const btn = document.getElementById('registerBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            
+            btn.disabled = loading;
+            btnText.style.display = loading ? 'none' : 'inline';
+            btnLoader.style.display = loading ? 'inline-block' : 'none';
+        }
+
+        /**
+         * Update cart count
+         */
+        async function updateCartCount() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cart/count`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const badge = document.getElementById('cartBadge');
+                    badge.textContent = data.count || 0;
+                    badge.style.display = data.count > 0 ? 'flex' : 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching cart count:', error);
+            }
+        }
+    </script>
+
+    <style>
+        /* Extend auth styles from login page */
+        .auth-section {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-card h1 {
+            color: #003366;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #003366;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #003366;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-indicator {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .strength-indicator.weak {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .strength-indicator.medium {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .strength-indicator.strong {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin-top: 2px;
+        }
+
+        .link-inline {
+            color: #ff6600;
+            text-decoration: none;
+        }
+
+        .link-inline:hover {
+            text-decoration: underline;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover:not(:disabled) {
+            background-color: #004d99;
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-loader svg {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-message {
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .form-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .form-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .auth-footer a {
+            color: #ff6600;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</body>
+</html>

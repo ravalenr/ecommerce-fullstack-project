@@ -12,15 +12,17 @@
 
 <body>
     <!-- Header section: logo and main navigation -->
-    <header>
-        <!-- Logo with link to homepage -->
+    <header class="main-header">
+    <div class="header-container">
+        <!-- Logo Section -->
         <div class="logo">
             <a href="index.html">
                 <img src="img/logotipo.png" alt="Multi Store Eletro Logo" />
             </a>
         </div>
-        <!-- Main menu -->
-        <nav>
+
+        <!-- Navigation Menu -->
+        <nav class="main-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About Us</a></li>
@@ -28,6 +30,83 @@
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </nav>
+
+        <!-- User Actions Section -->
+        <div class="header-actions">
+            <!-- User Account Menu -->
+            <div class="account-menu">
+                <button class="account-btn" id="accountBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span id="accountText">Account</span>
+                    <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M6 9L1 4h10z"/>
+                    </svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div class="account-dropdown" id="accountDropdown">
+                    <!-- Logged Out Menu -->
+                    <div id="loggedOutMenu" style="display: none;">
+                        <a href="login.html" class="dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                            Login
+                        </a>
+                        <a href="register.html" class="dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                            Register
+                        </a>
+                    </div>
+
+                    <!-- Logged In Menu -->
+                    <div id="loggedInMenu" style="display: none;">
+                        <div class="dropdown-user-info">
+                            <strong id="userName">User Name</strong>
+                            <span id="userEmail">user@example.com</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="profile.html" class="dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            My Profile
+                        </a>
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopping Cart -->
+            <a href="cart.html" class="cart-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge" id="cartBadge">0</span>
+                <span class="cart-text">Cart</span>
+                </a>
+            </div>
+        </div>
     </header>
 
     <!-- Hero section: main banner with welcome message -->
@@ -39,8 +118,7 @@
             <a href="products.html" class="hero-btn">Browse Our Products</a>
         </div>
     </section>
-
-    About preview on homepage
+    <!-- About preview section on homepage -->
     <section id="about-preview" class="section">
         <h2>Why Choose Multi Store Eletro?</h2>
         <div class="about-grid">
@@ -114,5 +192,180 @@
     <footer>
         <p>&copy; 2025 Multi Store Electro - All rights reserved.</p>
     </footer>
+    <script>
+        // ========================================
+        // HEADER FUNCTIONALITY
+        // ========================================
+
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Initialize header on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeHeader();
+        });
+
+        /**
+         * Initialize all header functionality
+         */
+        async function initializeHeader() {
+            // Check authentication status
+            await checkAuthStatus();
+            
+            // Update cart count
+            await updateCartCount();
+            
+            // Setup event listeners
+            setupHeaderEventListeners();
+        }
+
+        /**
+         * Check if user is logged in and update UI
+         */
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    method: 'GET',
+                    credentials: 'include' // Important for cookies
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // User is logged in
+                    updateHeaderForLoggedInUser(data.data);
+                } else {
+                    // User is not logged in
+                    updateHeaderForLoggedOutUser();
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+                updateHeaderForLoggedOutUser();
+            }
+        }
+
+        /**
+         * Update header for logged-in user
+         */
+        function updateHeaderForLoggedInUser(userData) {
+            const accountText = document.getElementById('accountText');
+            const loggedInMenu = document.getElementById('loggedInMenu');
+            const loggedOutMenu = document.getElementById('loggedOutMenu');
+            const userName = document.getElementById('userName');
+            const userEmail = document.getElementById('userEmail');
+
+            // Update account button text
+            const firstName = userData.full_name.split(' ')[0];
+            accountText.textContent = `Hi, ${firstName}`;
+
+            // Update dropdown user info
+            userName.textContent = userData.full_name;
+            userEmail.textContent = userData.email;
+
+            // Show logged-in menu, hide logged-out menu
+            loggedInMenu.style.display = 'block';
+            loggedOutMenu.style.display = 'none';
+        }
+
+        /**
+         * Update header for logged-out user
+         */
+        function updateHeaderForLoggedOutUser() {
+            const accountText = document.getElementById('accountText');
+            const loggedInMenu = document.getElementById('loggedInMenu');
+            const loggedOutMenu = document.getElementById('loggedOutMenu');
+
+            // Update account button text
+            accountText.textContent = 'Account';
+
+            // Show logged-out menu, hide logged-in menu
+            loggedInMenu.style.display = 'none';
+            loggedOutMenu.style.display = 'block';
+        }
+
+        /**
+         * Update cart count badge
+         */
+        async function updateCartCount() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cart/count`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const badge = document.getElementById('cartBadge');
+                    const count = data.count || 0;
+                    
+                    badge.textContent = count;
+                    
+                    // Show/hide badge based on count
+                    if (count > 0) {
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching cart count:', error);
+            }
+        }
+
+        /**
+         * Setup event listeners for header interactions
+         */
+        function setupHeaderEventListeners() {
+            // Account dropdown toggle
+            const accountBtn = document.getElementById('accountBtn');
+            const accountDropdown = document.getElementById('accountDropdown');
+            
+            accountBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                accountDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!accountBtn.contains(e.target)) {
+                    accountDropdown.classList.remove('show');
+                }
+            });
+
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        }
+
+        /**
+         * Handle logout
+         */
+        async function handleLogout(e) {
+            e.preventDefault();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    // Logout successful
+                    alert('Logged out successfully!');
+                    // Redirect to home page
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Error logging out. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error logging out. Please try again.');
+            }
+        }
+
+        // Make updateCartCount available globally for other pages to call
+        window.updateCartCount = updateCartCount;
+    </script>
 </body>
 </html>
