@@ -12,10 +12,11 @@ const database = require('../config/database');
  * @query {number} category_id - Filter by category
  * @query {boolean} featured - Filter featured products
  * @query {string} search - Search by product name
+ * @query {number} limit - Limit number of results
  */
 const getAllProducts = async (req, res) => {
     try {
-        const { category_id, featured, search } = req.query;
+        const { category_id, featured, search, limit } = req.query;
         
         let sql = `
             SELECT 
@@ -23,10 +24,12 @@ const getAllProducts = async (req, res) => {
                 p.product_name,
                 p.description,
                 p.price,
+                p.discount_percentage,
                 p.stock_quantity,
                 p.image_url,
                 p.is_featured,
                 p.is_active,
+                p.created_at,
                 c.category_name,
                 c.category_id
             FROM products p
@@ -49,13 +52,21 @@ const getAllProducts = async (req, res) => {
         
         // Add search filter
         if (search) {
-            sql += ' AND p.product_name LIKE ?';
-            params.push(`%${search}%`);
+            sql += ' AND (p.product_name LIKE ? OR p.description LIKE ?)';
+            params.push(`%${search}%`, `%${search}%`);
         }
         
         sql += ' ORDER BY p.created_at DESC';
         
-        const products = database.query(sql, params);
+        // Add limit
+        if (limit) {
+            sql += ' LIMIT ?';
+            params.push(parseInt(limit));
+        }
+        
+        const products = await database.query(sql, params);  
+        
+        console.log('Products fetched:', products.length);  // Debug log
         
         res.status(200).json({
             success: true,
@@ -92,7 +103,7 @@ const getProductById = async (req, res) => {
             WHERE p.product_id = ? AND p.is_active = 1
         `;
         
-        const product = database.get(sql, [id]);
+        const product = await database.get(sql, [id]);
         
         if (!product) {
             return res.status(404).json({
@@ -103,7 +114,7 @@ const getProductById = async (req, res) => {
         
         // Get additional images for this product
         const imagesSql = 'SELECT * FROM product_images WHERE product_id = ?';
-        const images = database.query(imagesSql, [id]);
+        const images = await database.query(imagesSql, [id]);
         
         product.additional_images = images;
         
@@ -170,10 +181,10 @@ const createProduct = async (req, res) => {
             is_featured ? 1 : 0
         ];
         
-        const result = database.run(sql, params);
+        const result = await database.run(sql, params);
         
         // Fetch the newly created product
-        const newProduct = database.get('SELECT * FROM products WHERE product_id = ?', [result.lastID]);
+        const newProduct = await database.get('SELECT * FROM products WHERE product_id = ?', [result.lastID]);
         
         res.status(201).json({
             success: true,
@@ -212,7 +223,7 @@ const updateProduct = async (req, res) => {
         } = req.body;
         
         // Check if product exists
-        const existingProduct = database.get('SELECT * FROM products WHERE product_id = ?', [id]);
+        const existingProduct = await database.get('SELECT * FROM products WHERE product_id = ?', [id]);
         
         if (!existingProduct) {
             return res.status(404).json({
@@ -256,10 +267,10 @@ const updateProduct = async (req, res) => {
             id
         ];
         
-        database.run(sql, params);
+        await database.run(sql, params);
         
         // Fetch updated product
-        const updatedProduct = database.get('SELECT * FROM products WHERE product_id = ?', [id]);
+        const updatedProduct = await database.get('SELECT * FROM products WHERE product_id = ?', [id]);
         
         res.status(200).json({
             success: true,
@@ -287,7 +298,7 @@ const deleteProduct = async (req, res) => {
         const { id } = req.params;
         
         // Check if product exists
-        const existingProduct = database.get('SELECT * FROM products WHERE product_id = ?', [id]);
+        const existingProduct = await database.get('SELECT * FROM products WHERE product_id = ?', [id]);
         
         if (!existingProduct) {
             return res.status(404).json({
@@ -298,7 +309,7 @@ const deleteProduct = async (req, res) => {
         
         // Soft delete - set is_active to 0
         const sql = 'UPDATE products SET is_active = 0 WHERE product_id = ?';
-        database.run(sql, [id]);
+        await database.run(sql, [id]);
         
         res.status(200).json({
             success: true,
@@ -322,7 +333,7 @@ const deleteProduct = async (req, res) => {
 const getAllCategories = async (req, res) => {
     try {
         const sql = 'SELECT * FROM categories ORDER BY category_name';
-        const categories = database.query(sql);
+        const categories = await database.query(sql);
         
         res.status(200).json({
             success: true,
@@ -359,7 +370,7 @@ const updateProductPrice = async (req, res) => {
         }
         
         // Check if product exists
-        const existingProduct = database.get('SELECT * FROM products WHERE product_id = ?', [id]);
+        const existingProduct = await database.get('SELECT * FROM products WHERE product_id = ?', [id]);
         
         if (!existingProduct) {
             return res.status(404).json({
@@ -374,9 +385,9 @@ const updateProductPrice = async (req, res) => {
             WHERE product_id = ?
         `;
         
-        database.run(sql, [price, id]);
+        await database.run(sql, [price, id]);
         
-        const updatedProduct = database.get('SELECT * FROM products WHERE product_id = ?', [id]);
+        const updatedProduct = await database.get('SELECT * FROM products WHERE product_id = ?', [id]);
         
         res.status(200).json({
             success: true,
@@ -415,7 +426,7 @@ const getFeaturedProducts = async (req, res) => {
             LIMIT 8
         `;
         
-        const products = database.query(sql);
+        const products = await database.query(sql);
         
         res.status(200).json({
             success: true,

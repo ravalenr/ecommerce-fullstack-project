@@ -3,517 +3,968 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Products - Multi Store Eletro</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Products - Multi Store Eletro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header section -->
+    <!-- Enhanced Header with Search -->
     <header class="main-header">
-    <div class="header-container">
-        <!-- Logo Section -->
-        <div class="logo">
-            <a href="index.html">
-                <img src="img/logotipo.png" alt="Multi Store Eletro Logo" />
-            </a>
-        </div>
+        <div class="header-container">
+            <div class="header-logo">
+                <a href="index.html">
+                    <img src="img/logotipo.png" alt="Multi Store Eletro Logo" />
+                </a>
+            </div>
 
-        <!-- Navigation Menu -->
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="products.html">Products</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
+            <div class="header-search">
+                <form class="search-form" onsubmit="handleSearch(event)">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search for products..." autocomplete="off">
+                    <button type="submit" class="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </form>
+                <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
+            </div>
 
-        <!-- User Actions Section -->
-        <div class="header-actions">
-            <!-- User Account Menu -->
-            <div class="account-menu">
-                <button class="account-btn" id="accountBtn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <span id="accountText">Account</span>
-                    <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                        <path d="M6 9L1 4h10z"/>
-                    </svg>
-                </button>
-                
-                <!-- Dropdown Menu -->
-                <div class="account-dropdown" id="accountDropdown">
-                    <!-- Logged Out Menu -->
-                    <div id="loggedOutMenu" style="display: none;">
-                        <a href="login.html" class="dropdown-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                <polyline points="10 17 15 12 10 7"></polyline>
-                                <line x1="15" y1="12" x2="3" y2="12"></line>
-                            </svg>
-                            Login
-                        </a>
-                        <a href="register.html" class="dropdown-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="8.5" cy="7" r="4"></circle>
-                                <line x1="20" y1="8" x2="20" y2="14"></line>
-                                <line x1="23" y1="11" x2="17" y2="11"></line>
-                            </svg>
-                            Register
-                        </a>
-                    </div>
+            <nav class="header-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
 
-                    <!-- Logged In Menu -->
-                    <div id="loggedInMenu" style="display: none;">
-                        <div class="dropdown-user-info">
-                            <strong id="userName">User Name</strong>
-                            <span id="userEmail">user@example.com</span>
+            <div class="header-actions">
+                <div class="account-menu">
+                    <button class="account-btn" id="accountBtn" onclick="toggleAccountMenu()">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <div class="account-info">
+                            <span class="account-greeting">Hello</span>
+                            <span class="account-name" id="accountName">Sign In</span>
                         </div>
-                        <div class="dropdown-divider"></div>
-                        <a href="profile.html" class="dropdown-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            My Profile
-                        </a>
-                        <a href="#" class="dropdown-item" id="logoutBtn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                <polyline points="16 17 21 12 16 7"></polyline>
-                                <line x1="21" y1="12" x2="9" y2="12"></line>
-                            </svg>
-                            Logout
-                        </a>
+                    </button>
+                    
+                    <div class="account-dropdown" id="accountDropdown">
+                        <div id="loggedOutMenu">
+                            <a href="login.html" class="dropdown-btn primary">Sign In</a>
+                            <p class="dropdown-text">New customer? <a href="register.html">Start here</a></p>
+                        </div>
+                        <div id="loggedInMenu" style="display: none;">
+                            <div class="dropdown-user">
+                                <strong id="userName">User Name</strong>
+                                <span id="userEmail">user@example.com</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="profile.html" class="dropdown-item">My Account</a>
+                            <a href="#" class="dropdown-item" onclick="handleLogout(event)">Sign Out</a>
+                        </div>
                     </div>
                 </div>
+
+                <a href="cart.html" class="cart-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                    <div class="cart-info">
+                        <span class="cart-greeting">Cart</span>
+                        <span class="cart-count" id="cartCount">0 items</span>
+                    </div>
+                </a>
             </div>
 
-            <!-- Shopping Cart -->
-            <a href="cart.html" class="cart-btn">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
-                <span class="cart-badge" id="cartBadge">0</span>
-                <span class="cart-text">Cart</span>
-              </a>
-          </div>
-      </div>
-  </header>
+            </button>
+        </div>
+    </header>
 
-    <!-- Hero section -->
-    <section class="products-hero">
-        <div class="hero-content">
-            <h1>Our Product Categories</h1>
-            <p>Discover the best electronics and appliances at competitive prices</p>
+    <!-- Results Header -->
+    <section class="results-header">
+        <div class="results-container">
+            <h1 id="resultsTitle">All Products</h1>
+            <div class="results-info">
+                <span id="resultsCount">Loading...</span>
+                <button class="clear-filters-btn" id="clearFiltersBtn" onclick="clearFilters()" style="display: none;">
+                    Clear Filters
+                </button>
+            </div>
         </div>
     </section>
 
-    <!-- Meet our products video section -->
-    <section id="featured-videos" class="section">
-        <h2>Check Out Our Top Products</h2>
-        <p class="section-intro">Watch these videos to see our finest products in action</p>
-        
-        <div class="video-grid">
-            <!-- iPhone 17 Pro -->
-            <div class="video-item">
-                <h3>iPhone 17 Pro</h3>
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/_-AS5DtDeqs" 
-                            title="iPhone 17 Pro" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                    </iframe>
+    <!-- Filters and Products -->
+    <section class="products-section">
+        <div class="products-container">
+            <!-- Sidebar Filters -->
+            <aside class="filters-sidebar">
+                <div class="filter-group">
+                    <h3>Categories</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="" checked onchange="applyFilters()">
+                            <span>All Categories</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="1" onchange="applyFilters()">
+                            <span>Smart TVs</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="2" onchange="applyFilters()">
+                            <span>Refrigerators</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="3" onchange="applyFilters()">
+                            <span>Computers</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="4" onchange="applyFilters()">
+                            <span>Smartphones</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="5" onchange="applyFilters()">
+                            <span>Microwaves</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="category" value="6" onchange="applyFilters()">
+                            <span>Cameras</span>
+                        </label>
+                    </div>
                 </div>
-                <p>Latest flagship with amazing camera and performance</p>
-            </div>
 
-            <!-- Samsung Bespoke Refrigerator -->
-            <div class="video-item">
-                <h3>Samsung Bespoke Refrigerator</h3>
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/A2HqZnKIViI" 
-                            title="Samsung Bespoke Refrigerator" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                    </iframe>
+                <div class="filter-group">
+                    <h3>Price Range</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="" checked onchange="applyFilters()">
+                            <span>Any Price</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="0-500" onchange="applyFilters()">
+                            <span>Under $500</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="500-1000" onchange="applyFilters()">
+                            <span>$500 - $1000</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="1000-2000" onchange="applyFilters()">
+                            <span>$1000 - $2000</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="price" value="2000-" onchange="applyFilters()">
+                            <span>Over $2000</span>
+                        </label>
+                    </div>
                 </div>
-                <p>Customizable design meets smart technology</p>
-            </div>
 
-            <!-- Samsung Frame Pro -->
-            <div class="video-item">
-                <h3>Samsung Frame Pro TV</h3>
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/Q7Rxzgo96M0" 
-                            title="Samsung Frame Pro TV" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                    </iframe>
+                <div class="filter-group">
+                    <h3>Availability</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" id="inStockOnly" onchange="applyFilters()">
+                            <span>In Stock Only</span>
+                        </label>
+                    </div>
                 </div>
-                <p>TV that looks like art when not in use</p>
-            </div>
-        </div>
 
-        <!-- Toggle button to show/hide videos -->
-        <div style="text-align: center; margin-top: 20px;">
-            <button id="toggleVideos" class="toggle-btn">Hide Videos</button>
-        </div>
-    </section>
+                <div class="filter-group">
+                    <h3>Deals</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" id="dealsOnly" onchange="applyFilters()">
+                            <span>On Sale</span>
+                        </label>
+                    </div>
+                </div>
 
-    <!-- Main products section -->
-    <section id="products" class="section">
-        <h2>Browse Our Collection</h2>
-        <p class="section-intro">Quality products from trusted brands, backed by excellent customer service and warranty support.</p>
-        
-        <div class="products-grid">
-          
-          <!-- TV Product Card -->
-          <div class="product-card">
-            <div class="product-image">
-              <img src="img/tvs.jpeg" alt="Smart TVs">
-              <div class="product-badge">Popular</div>
-            </div>
-            <div class="product-info">
-              <h3>Smart TVs</h3>
-              <p>Experience stunning picture quality with our range of 4K and OLED Smart TVs. From compact 32" to immersive 75" screens.</p>
-              <ul class="product-features">
-                <li>4K Ultra HD Resolution</li>
-                <li>Smart TV Features</li>
-                <li>Multiple HDMI Ports</li>
-              </ul>
-              <a href="contact.html" class="product-btn">Inquire Now</a>
-            </div>
-          </div>
+                <div class="filter-group">
+                    <h3>Sort By</h3>
+                    <select id="sortBy" class="sort-select" onchange="applyFilters()">
+                        <option value="">Default</option>
+                        <option value="name_asc">Name (A-Z)</option>
+                        <option value="name_desc">Name (Z-A)</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                </div>
+            </aside>
 
-          <!-- Fridge Product Card -->
-          <div class="product-card">
-            <div class="product-image">
-              <img src="img/fridge.jpeg" alt="Refrigerators">
-              <div class="product-badge">Best Value</div>
-            </div>
-            <div class="product-info">
-              <h3>Refrigerators</h3>
-              <p>Keep your food fresh with energy-efficient refrigerators. Single door, double door, and French door models available.</p>
-              <ul class="product-features">
-                <li>Energy Efficient A+ Rating</li>
-                <li>Frost-Free Technology</li>
-                <li>Adjustable Shelving</li>
-              </ul>
-              <a href="contact.html" class="product-btn">Inquire Now</a>
-            </div>
-          </div>
+            <!-- Products Grid -->
+            <div class="products-content">
+                <!-- Loading State -->
+                <div id="productsLoading" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading products...</p>
+                </div>
 
-          <!-- Computer Product Card -->
-          <div class="product-card">
-            <div class="product-image">
-              <img src="img/computers.jpeg" alt="Computers">
-              <div class="product-badge">New Arrivals</div>
-            </div>
-            <div class="product-info">
-              <h3>Computers & Laptops</h3>
-              <p>High-performance desktops and portable laptops for work, gaming, and entertainment. Latest processors and graphics.</p>
-              <ul class="product-features">
-                <li>Latest Generation Processors</li>
-                <li>SSD Storage Options</li>
-                <li>Extended Warranty Available</li>
-              </ul>
-              <a href="contact.html" class="product-btn">Inquire Now</a>
-            </div>
-          </div>
+                <!-- Products Grid -->
+                <div id="productsGrid" class="products-grid" style="display: none;"></div>
 
-          <!-- Smartphone Product Card -->
-          <div class="product-card">
-            <div class="product-image">
-              <img src="img/telephone.png" alt="Smartphones">
-              <div class="product-badge">Hot Deal</div>
-            </div>
-            <div class="product-info">
-              <h3>Smartphones</h3>
-              <p>Stay connected with the latest smartphones from top brands. 5G enabled, powerful cameras, and long battery life.</p>
-              <ul class="product-features">
-                <li>5G Connectivity</li>
-                <li>High-Resolution Cameras</li>
-                <li>Fast Charging Support</li>
-              </ul>
-              <a href="contact.html" class="product-btn">Inquire Now</a>
-            </div>
-          </div>
+                <!-- No Results -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your search or filters</p>
+                    <button class="btn-primary" onclick="clearFilters()">Clear All Filters</button>
+                </div>
 
-          <!-- Microwave Product Card -->
-          <div class="product-card">
-            <div class="product-image">
-              <img src="img/microwaves.jpeg" alt="Microwaves">
+                <!-- Error State -->
+                <div id="errorState" class="error-state" style="display: none;">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <h3>Error loading products</h3>
+                    <p>Please try again later</p>
+                    <button class="btn-primary" onclick="loadProducts()">Retry</button>
+                </div>
             </div>
-            <div class="product-info">
-              <h3>Microwaves</h3>
-              <p>Quick and convenient cooking with our selection of microwave ovens. Multiple power levels and preset cooking modes.</p>
-              <ul class="product-features">
-                <li>Multiple Power Settings</li>
-                <li>Auto-Cook Menus</li>
-                <li>Easy Clean Interior</li>
-              </ul>
-              <a href="contact.html" class="product-btn">Inquire Now</a>
-            </div>
-          </div>
-
-          <!-- Photography Product Card -->
-          <div class="product-card">
-            <div class="product-image">
-              <img src="img/photography.jpeg" alt="Cameras">
-            </div>
-            <div class="product-info">
-              <h3>Photography Equipment</h3>
-              <p>Capture life's moments with professional cameras, lenses, and accessories. Perfect for beginners and professionals.</p>
-              <ul class="product-features">
-                <li>DSLR & Mirrorless Options</li>
-                <li>Professional Lenses</li>
-                <li>Accessories & Tripods</li>
-              </ul>
-              <a href="contact.html" class="product-btn">Inquire Now</a>
-            </div>
-          </div>
-
         </div>
     </section>
 
-    <!-- Call to action -->
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2>Can't Find What You're Looking For?</h2>
-            <p>Our team is here to help you find the perfect product for your needs. Contact us today!</p>
-            <a href="contact.html" class="cta-button">Contact Us Now</a>
-        </div>
-    </section>
-
-    <!-- WhatsApp floating button -->
-    <a href="https://api.whatsapp.com/send?phone=5511991215175&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos!" 
+    <!-- WhatsApp Float Button -->
+    <a href="https://api.whatsapp.com/send?phone=5511991215175&text=Olá%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos!" 
         class="whatsapp-float" 
         target="_blank" 
         title="Contact us on WhatsApp">
         <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="50">
     </a>
 
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+        <p>&copy; 2025 Multi Store Eletro - All rights reserved.</p>
     </footer>
 
+    <!-- JavaScript -->
+    <script src="header-script.js"></script>
     <script>
-        // Product cards scroll animation
-        window.addEventListener('scroll', function() {
-            const cards = document.querySelectorAll('.product-card');
-            
-            cards.forEach(function(card) {
-                const position = card.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-                
-                if (position < windowHeight * 0.8) {
-                    card.classList.add('is-visible');
-                }
-            });
-        });
+        const API_URL = window.API_BASE_URL || 'http://localhost:3000/api';
 
-        // Toggle videos section visibility
-        const toggleBtn = document.getElementById('toggleVideos');
-        const videosSection = document.getElementById('featured-videos');
-        let videosVisible = true;
+        let allProducts = [];
+        let currentFilters = {
+            search: '',
+            category: '',
+            priceRange: '',
+            inStockOnly: false,
+            dealsOnly: false,
+            sortBy: ''
+        };
 
-        toggleBtn.addEventListener('click', function() {
-            const videoGrid = document.querySelector('.video-grid');
-            const intro = videosSection.querySelector('.section-intro');
+        /**
+         * Extract products array from any API response format
+         */
+        function extractProductsArray(response) {
+            console.log('Extracting products from API response');
             
-            if (videosVisible) {
-                videoGrid.style.display = 'none';
-                intro.style.display = 'none';
-                toggleBtn.textContent = 'Show Videos';
-                videosVisible = false;
-            } else {
-                videoGrid.style.display = 'grid';
-                intro.style.display = 'block';
-                toggleBtn.textContent = 'Hide Videos';
-                videosVisible = true;
+            if (Array.isArray(response)) {
+                console.log('Found direct array:', response.length, 'items');
+                return response;
             }
-        });
-        // ========================================
-        // HEADER FUNCTIONALITY
-        // ========================================
+            
+            if (response.data && Array.isArray(response.data)) {
+                console.log('Found array in response.data:', response.data.length, 'items');
+                return response.data;
+            }
+            
+            if (response.products && Array.isArray(response.products)) {
+                console.log('Found array in response.products:', response.products.length, 'items');
+                return response.products;
+            }
+            
+            if (response.data && response.data.products && Array.isArray(response.data.products)) {
+                console.log('Found array in response.data.products:', response.data.products.length, 'items');
+                return response.data.products;
+            }
+            
+            if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                console.log('Found array in response.data.data:', response.data.data.length, 'items');
+                return response.data.data;
+            }
+            
+            console.error('Could not find products array in response:', response);
+            return [];
+        }
 
-        // API Configuration
-        const API_BASE_URL = 'http://localhost:3000/api';
-
-        // Initialize header on page load
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            initializeHeader();
+            console.log('Products page initialized');
+            parseURLParameters();
+            loadProducts();
         });
 
         /**
-         * Initialize all header functionality
+         * Parse URL parameters
          */
-        async function initializeHeader() {
-            // Check authentication status
-            await checkAuthStatus();
+        function parseURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
             
-            // Update cart count
-            await updateCartCount();
-            
-            // Setup event listeners
-            setupHeaderEventListeners();
-        }
+            // Search query
+            const search = urlParams.get('search');
+            if (search) {
+                currentFilters.search = search;
+                document.getElementById('searchInput').value = search;
+                document.getElementById('resultsTitle').textContent = `Search results for "${search}"`;
+                document.getElementById('clearFiltersBtn').style.display = 'inline-block';
+            }
 
-        /**
-         * Check if user is logged in and update UI
-         */
-        async function checkAuthStatus() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/auth/me`, {
-                    method: 'GET',
-                    credentials: 'include' // Important for cookies
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    // User is logged in
-                    updateHeaderForLoggedInUser(data.data);
-                } else {
-                    // User is not logged in
-                    updateHeaderForLoggedOutUser();
+            // Category
+            const category = urlParams.get('category');
+            if (category) {
+                currentFilters.category = category;
+                const categoryRadio = document.querySelector(`input[name="category"][value="${category}"]`);
+                if (categoryRadio) {
+                    categoryRadio.checked = true;
                 }
-            } catch (error) {
-                console.error('Error checking auth status:', error);
-                updateHeaderForLoggedOutUser();
+                updateResultsTitle();
+                document.getElementById('clearFiltersBtn').style.display = 'inline-block';
+            }
+
+            // Deals
+            const deals = urlParams.get('deals');
+            if (deals === 'true') {
+                currentFilters.dealsOnly = true;
+                document.getElementById('dealsOnly').checked = true;
+                document.getElementById('resultsTitle').textContent = 'Hot Deals';
+                document.getElementById('clearFiltersBtn').style.display = 'inline-block';
             }
         }
 
         /**
-         * Update header for logged-in user
+         * Load products from API
          */
-        function updateHeaderForLoggedInUser(userData) {
-            const accountText = document.getElementById('accountText');
-            const loggedInMenu = document.getElementById('loggedInMenu');
-            const loggedOutMenu = document.getElementById('loggedOutMenu');
-            const userName = document.getElementById('userName');
-            const userEmail = document.getElementById('userEmail');
+        async function loadProducts() {
+            console.log('Loading products from API...');
+            showLoading();
 
-            // Update account button text
-            const firstName = userData.full_name.split(' ')[0];
-            accountText.textContent = `Hi, ${firstName}`;
-
-            // Update dropdown user info
-            userName.textContent = userData.full_name;
-            userEmail.textContent = userData.email;
-
-            // Show logged-in menu, hide logged-out menu
-            loggedInMenu.style.display = 'block';
-            loggedOutMenu.style.display = 'none';
-        }
-
-        /**
-         * Update header for logged-out user
-         */
-        function updateHeaderForLoggedOutUser() {
-            const accountText = document.getElementById('accountText');
-            const loggedInMenu = document.getElementById('loggedInMenu');
-            const loggedOutMenu = document.getElementById('loggedOutMenu');
-
-            // Update account button text
-            accountText.textContent = 'Account';
-
-            // Show logged-out menu, hide logged-in menu
-            loggedInMenu.style.display = 'none';
-            loggedOutMenu.style.display = 'block';
-        }
-
-        /**
-         * Update cart count badge
-         */
-        async function updateCartCount() {
             try {
-                const response = await fetch(`${API_BASE_URL}/cart/count`, {
-                    method: 'GET',
+                const response = await fetch(`${API_URL}/products`, {
                     credentials: 'include'
                 });
 
+                console.log('API response status:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
-                    const badge = document.getElementById('cartBadge');
-                    const count = data.count || 0;
+                    console.log('API response data:', data);
                     
-                    badge.textContent = count;
+                    // Extract products array using helper function
+                    allProducts = extractProductsArray(data);
                     
-                    // Show/hide badge based on count
-                    if (count > 0) {
-                        badge.style.display = 'flex';
-                    } else {
-                        badge.style.display = 'none';
-                    }
+                    console.log('Products loaded successfully:', allProducts.length, 'items');
+                    applyFiltersAndDisplay();
+                } else {
+                    console.error('API returned error status:', response.status);
+                    showError();
                 }
             } catch (error) {
-                console.error('Error fetching cart count:', error);
+                console.error('Error loading products:', error);
+                showError();
             }
         }
 
         /**
-         * Setup event listeners for header interactions
+         * Apply filters
          */
-        function setupHeaderEventListeners() {
-            // Account dropdown toggle
-            const accountBtn = document.getElementById('accountBtn');
-            const accountDropdown = document.getElementById('accountDropdown');
+        function applyFilters() {
+            // Get category
+            const categoryRadio = document.querySelector('input[name="category"]:checked');
+            currentFilters.category = categoryRadio ? categoryRadio.value : '';
+
+            // Get price range
+            const priceRadio = document.querySelector('input[name="price"]:checked');
+            currentFilters.priceRange = priceRadio ? priceRadio.value : '';
+
+            // Get checkboxes
+            currentFilters.inStockOnly = document.getElementById('inStockOnly').checked;
+            currentFilters.dealsOnly = document.getElementById('dealsOnly').checked;
+
+            // Get sort
+            currentFilters.sortBy = document.getElementById('sortBy').value;
+
+            // Update title
+            updateResultsTitle();
+
+            // Show/hide clear button
+            const hasFilters = currentFilters.category || currentFilters.priceRange || 
+                              currentFilters.inStockOnly || currentFilters.dealsOnly || 
+                              currentFilters.search;
+            document.getElementById('clearFiltersBtn').style.display = hasFilters ? 'inline-block' : 'none';
+
+            // Apply and display
+            applyFiltersAndDisplay();
+        }
+
+        /**
+         * Apply filters and display products
+         */
+        function applyFiltersAndDisplay() {
+            console.log('Applying filters...');
             
-            accountBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                accountDropdown.classList.toggle('show');
-            });
+            // Safety check - ensure allProducts is an array
+            if (!Array.isArray(allProducts)) {
+                console.error('allProducts is not an array! Type:', typeof allProducts);
+                console.error('allProducts value:', allProducts);
+                allProducts = [];
+            }
+            
+            let filtered = [...allProducts];
+            console.log('Starting with', filtered.length, 'products');
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!accountBtn.contains(e.target)) {
-                    accountDropdown.classList.remove('show');
-                }
-            });
+            // Search filter
+            if (currentFilters.search) {
+                const searchLower = currentFilters.search.toLowerCase();
+                filtered = filtered.filter(p => 
+                    p.product_name.toLowerCase().includes(searchLower) ||
+                    (p.description && p.description.toLowerCase().includes(searchLower))
+                );
+                console.log('After search filter:', filtered.length, 'products');
+            }
 
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
+            // Category filter
+            if (currentFilters.category) {
+                filtered = filtered.filter(p => p.category_id == currentFilters.category);
+                console.log('After category filter:', filtered.length, 'products');
+            }
+
+            // Price filter
+            if (currentFilters.priceRange) {
+                const [min, max] = currentFilters.priceRange.split('-').map(v => v ? parseFloat(v) : null);
+                filtered = filtered.filter(p => {
+                    const price = parseFloat(p.price) - (parseFloat(p.price) * (parseFloat(p.discount_percentage) || 0) / 100);
+                    if (max) {
+                        return price >= min && price <= max;
+                    } else {
+                        return price >= min;
+                    }
+                });
+                console.log('After price filter:', filtered.length, 'products');
+            }
+
+            // In stock filter
+            if (currentFilters.inStockOnly) {
+                filtered = filtered.filter(p => p.stock_quantity > 0);
+                console.log('After stock filter:', filtered.length, 'products');
+            }
+
+            // Deals filter
+            if (currentFilters.dealsOnly) {
+                filtered = filtered.filter(p => (p.discount_percentage || 0) > 0);
+                console.log('After deals filter:', filtered.length, 'products');
+            }
+
+            // Sort
+            if (currentFilters.sortBy) {
+                filtered = sortProducts(filtered, currentFilters.sortBy);
+            }
+
+            console.log('Final filtered products:', filtered.length);
+            displayProducts(filtered);
+        }
+
+        /**
+         * Sort products
+         */
+        function sortProducts(products, sortBy) {
+            const sorted = [...products];
+
+            switch (sortBy) {
+                case 'name_asc':
+                    sorted.sort((a, b) => a.product_name.localeCompare(b.product_name));
+                    break;
+                case 'name_desc':
+                    sorted.sort((a, b) => b.product_name.localeCompare(a.product_name));
+                    break;
+                case 'price_asc':
+                    sorted.sort((a, b) => {
+                        const priceA = parseFloat(a.price) - (parseFloat(a.price) * (parseFloat(a.discount_percentage) || 0) / 100);
+                        const priceB = parseFloat(b.price) - (parseFloat(b.price) * (parseFloat(b.discount_percentage) || 0) / 100);
+                        return priceA - priceB;
+                    });
+                    break;
+                case 'price_desc':
+                    sorted.sort((a, b) => {
+                        const priceA = parseFloat(a.price) - (parseFloat(a.price) * (parseFloat(a.discount_percentage) || 0) / 100);
+                        const priceB = parseFloat(b.price) - (parseFloat(b.price) * (parseFloat(b.discount_percentage) || 0) / 100);
+                        return priceB - priceA;
+                    });
+                    break;
+                case 'newest':
+                    sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    break;
+            }
+
+            return sorted;
+        }
+
+        /**
+         * Display products
+         */
+        function displayProducts(products) {
+            console.log('Displaying', products.length, 'products');
+            
+            const grid = document.getElementById('productsGrid');
+            const loading = document.getElementById('productsLoading');
+            const noResults = document.getElementById('noResults');
+            const errorState = document.getElementById('errorState');
+            const resultsCount = document.getElementById('resultsCount');
+
+            loading.style.display = 'none';
+            errorState.style.display = 'none';
+
+            if (products.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'flex';
+                resultsCount.textContent = 'No products found';
+            } else {
+                noResults.style.display = 'none';
+                grid.style.display = 'grid';
+                resultsCount.textContent = `${products.length} product${products.length !== 1 ? 's' : ''} found`;
+
+                grid.innerHTML = products.map(product => createProductCard(product)).join('');
             }
         }
 
         /**
-         * Handle logout
+         * Create product card
          */
-        async function handleLogout(e) {
-            e.preventDefault();
+        function createProductCard(product) {
+            // Parse price and discount as numbers
+            const price = parseFloat(product.price) || 0;
+            const discount = parseFloat(product.discount_percentage) || 0;
+            const discountedPrice = price - (price * discount / 100);
             
+            return `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${product.image_url || 'img/default-product.png'}" 
+                            alt="${product.product_name}"
+                            onerror="this.src='img/default-product.png'">
+                        ${discount > 0 ? `
+                            <span class="product-badge hot-deal">${discount}% OFF</span>
+                        ` : ''}
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">${product.product_name}</h3>
+                        <p class="product-description">${truncateText(product.description || '', 80)}</p>
+                        <div class="product-price">
+                            ${discount > 0 ? `
+                                <span class="price-original">$${price.toFixed(2)}</span>
+                                <span class="price-current">$${discountedPrice.toFixed(2)}</span>
+                            ` : `
+                                <span class="price-current">$${price.toFixed(2)}</span>
+                            `}
+                        </div>
+                        <div class="product-stock">
+                            ${product.stock_quantity > 0 
+                                ? `<span class="in-stock">In Stock (${product.stock_quantity})</span>`
+                                : '<span class="out-of-stock">Out of Stock</span>'}
+                        </div>
+                        <button class="add-to-cart-btn" 
+                                onclick="addToCart(${product.product_id})"
+                                ${product.stock_quantity === 0 ? 'disabled' : ''}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            ${product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Add to cart
+         */
+        async function addToCart(productId) {
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                const response = await fetch(`${API_URL}/cart/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+
+                if (response.ok) {
+                    showNotification('Product added to cart!', 'success');
+                    if (window.updateCartCount) {
+                        updateCartCount();
+                    }
+                } else {
+                    const data = await response.json();
+                    showNotification(data.message || 'Error adding to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error adding to cart', 'error');
+            }
+        }
+
+        /**
+         * Clear filters
+         */
+        function clearFilters() {
+            currentFilters = {
+                search: '',
+                category: '',
+                priceRange: '',
+                inStockOnly: false,
+                dealsOnly: false,
+                sortBy: ''
+            };
+
+            document.getElementById('searchInput').value = '';
+            document.querySelector('input[name="category"][value=""]').checked = true;
+            document.querySelector('input[name="price"][value=""]').checked = true;
+            document.getElementById('inStockOnly').checked = false;
+            document.getElementById('dealsOnly').checked = false;
+            document.getElementById('sortBy').value = '';
+            document.getElementById('resultsTitle').textContent = 'All Products';
+            document.getElementById('clearFiltersBtn').style.display = 'none';
+
+            window.history.pushState({}, '', 'products.html');
+            applyFiltersAndDisplay();
+        }
+
+        /**
+         * Update results title
+         */
+        function updateResultsTitle() {
+            if (currentFilters.search) {
+                document.getElementById('resultsTitle').textContent = `Search: "${currentFilters.search}"`;
+            } else if (currentFilters.category) {
+                const categories = {
+                    '1': 'Smart TVs',
+                    '2': 'Refrigerators',
+                    '3': 'Computers',
+                    '4': 'Smartphones',
+                    '5': 'Microwaves',
+                    '6': 'Cameras'
+                };
+                document.getElementById('resultsTitle').textContent = categories[currentFilters.category] || 'All Products';
+            } else if (currentFilters.dealsOnly) {
+                document.getElementById('resultsTitle').textContent = 'Hot Deals';
+            } else {
+                document.getElementById('resultsTitle').textContent = 'All Products';
+            }
+        }
+
+        /**
+         * Show loading state
+         */
+        function showLoading() {
+            document.getElementById('productsLoading').style.display = 'flex';
+            document.getElementById('productsGrid').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+        }
+
+        /**
+         * Show error state
+         */
+        function showError() {
+            document.getElementById('productsLoading').style.display = 'none';
+            document.getElementById('productsGrid').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('errorState').style.display = 'flex';
+        }
+
+        /**
+         * Show notification
+         */
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        /**
+         * Truncate text
+         */
+        function truncateText(text, maxLength) {
+            if (!text || text.length <= maxLength) return text || '';
+            return text.substring(0, maxLength) + '...';
+        }
+
+        // Header functions
+        function handleSearch(event) {
+            event.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                currentFilters.search = query;
+                window.history.pushState({}, '', `products.html?search=${encodeURIComponent(query)}`);
+                document.getElementById('resultsTitle').textContent = `Search results for "${query}"`;
+                document.getElementById('clearFiltersBtn').style.display = 'inline-block';
+                applyFiltersAndDisplay();
+            }
+        }
+
+        function toggleAccountMenu() {
+            const dropdown = document.getElementById('accountDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.querySelector('.header-nav');
+            if (nav) {
+                nav.classList.toggle('mobile-open');
+            }
+        }
+
+        async function handleLogout(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch(`${API_URL}/auth/logout`, {
                     method: 'POST',
                     credentials: 'include'
                 });
-
                 if (response.ok) {
-                    // Logout successful
-                    alert('Logged out successfully!');
-                    // Redirect to home page
                     window.location.href = 'index.html';
-                } else {
-                    alert('Error logging out. Please try again.');
                 }
             } catch (error) {
-                console.error('Error logging out:', error);
-                alert('Error logging out. Please try again.');
+                console.error('Logout error:', error);
             }
         }
 
-        // Make updateCartCount available globally for other pages to call
-        window.updateCartCount = updateCartCount;
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.account-menu')) {
+                const dropdown = document.getElementById('accountDropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
     </script>
+
+    <style>
+        /* Products page specific styles */
+        .results-header {
+            background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+            color: white;
+            padding: 30px 20px;
+        }
+
+        .results-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .results-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-filters-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .clear-filters-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .products-section {
+            padding: 40px 20px;
+        }
+
+        .products-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        .filters-sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .filter-group {
+            margin-bottom: 30px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group h3 {
+            color: #003366;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .filter-option:hover {
+            color: #ff6600;
+        }
+
+        .filter-option input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .sort-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #003366;
+        }
+
+        .products-content {
+            min-height: 400px;
+        }
+
+        .loading-state,
+        .no-results,
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #003366;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-results h3,
+        .error-state h3 {
+            color: #003366;
+            margin: 20px 0 10px;
+        }
+
+        .no-results p,
+        .error-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: #ff6600;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff8533;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1024px) {
+            .products-container {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .results-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
 </body>
 </html>
