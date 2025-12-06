@@ -1,11 +1,13 @@
 /**
  * Authentication Controller
- * Purpose: Handle user authentication, registration, and profile management
- * Security: Uses bcrypt for password hashing, session-based authentication
+ * Handles user authentication, registration, and profile management
+ * Uses bcrypt for password hashing and session-based authentication
  */
 
 const bcrypt = require('bcryptjs');
 const database = require('../config/database');
+const { sendSuccess, sendError, sendValidationError, sendUnauthorized } = require('../utils/responseHelper');
+const { isValidEmail, isValidPassword, validateRequiredFields, sanitizeEmail } = require('../utils/validationHelper');
 
 /**
  * Register new user
@@ -15,84 +17,65 @@ const database = require('../config/database');
 const register = async (req, res) => {
     try {
         const { email, password, full_name, phone, address } = req.body;
-        
-        // Validation
-        if (!email || !password || !full_name) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email, password, and full name are required'
-            });
+
+        // Check if all required fields are present
+        const validation = validateRequiredFields(req.body, ['email', 'password', 'full_name']);
+        if (!validation.valid) {
+            return sendValidationError(res, `Missing required fields: ${validation.missing.join(', ')}`);
         }
-        
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid email format'
-            });
+
+        // Validate email format using our helper
+        if (!isValidEmail(email)) {
+            return sendValidationError(res, 'Invalid email format');
         }
-        
-        // Validate password length
-        if (password.length < 6) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password must be at least 6 characters long'
-            });
+
+        // Validate password using our helper
+        if (!isValidPassword(password)) {
+            return sendValidationError(res, 'Password must be at least 6 characters long');
         }
-        
-        // Check if email already exists
+
+        // Clean up the email (lowercase and trim)
+        const cleanEmail = sanitizeEmail(email);
+
+        // Check if email is already registered
         const existingUser = await database.get(
             'SELECT user_id FROM users WHERE email = ?',
-            [email.toLowerCase()]
+            [cleanEmail]
         );
-        
+
         if (existingUser) {
-            return res.status(409).json({
-                success: false,
-                message: 'Email already registered'
-            });
+            return sendError(res, 'Email already registered', 409);
         }
-        
-        // Hash password with bcrypt (10 salt rounds)
+
+        // Hash password securely
         const password_hash = await bcrypt.hash(password, 10);
-        
-        // Insert new user
+
+        // Create new user in database
         const sql = `
             INSERT INTO users (email, password_hash, full_name, phone, address)
             VALUES (?, ?, ?, ?, ?)
         `;
-        
+
         const result = await database.run(sql, [
-            email.toLowerCase(),
+            cleanEmail,
             password_hash,
             full_name,
             phone || null,
             address || null
         ]);
-        
-        // Get the newly created user (without password)
+
+        // Get the newly created user data (without password hash)
         const newUser = await database.get(
             'SELECT user_id, email, full_name, phone, address, created_at FROM users WHERE user_id = ?',
             [result.lastID]
         );
-        
-        // To-Do: Send verification email (future enhancement)
-        // await sendVerificationEmail(newUser.email, verificationToken);
-        
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully',
-            data: newUser
-        });
-        
+
+        // Send success response using our helper
+        return sendSuccess(res, newUser, 'User registered successfully', 201);
+
     } catch (error) {
         console.error('Error in register:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error registering user',
-            error: error.message
-        });
+        return sendError(res, 'Error registering user', 500, error);
     }
 };
 
@@ -104,55 +87,51 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
-        // Validation
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email and password are required'
-            });
+
+        // Check required fields
+        const validation = validateRequiredFields(req.body, ['email', 'password']);
+        if (!validation.valid) {
+            return sendValidationError(res, `Missing required fields: ${validation.missing.join(', ')}`);
         }
-        
-        // Find user by email
+
+        // Clean up email
+        const cleanEmail = sanitizeEmail(email);
+
+        // Find user in database
         const user = await database.get(
             'SELECT * FROM users WHERE email = ? AND is_active = TRUE',
-            [email.toLowerCase()]
+            [cleanEmail]
         );
-        
+
+        // Check if user exists
         if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid email or password'
-            });
+            return sendUnauthorized(res, 'Invalid email or password');
         }
-        
-        // Compare password with hash
+
+        // Verify password
         const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-        
+
         if (!isPasswordValid) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid email or password'
-            });
+            return sendUnauthorized(res, 'Invalid email or password');
         }
-        
-        // Update last login timestamp
+
+        // Update last login time
         await database.run(
             'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE user_id = ?',
             [user.user_id]
         );
-        
-        // Create session
+
+        // Create user session
         req.session.userId = user.user_id;
         req.session.email = user.email;
-        
-        // If user was using guest cart, merge it with user cart
+
+        // Merge guest cart if user had items before logging in
         if (req.session.guestSessionId) {
             await mergeGuestCart(req.session.guestSessionId, user.user_id);
             delete req.session.guestSessionId;
         }
-        
-        // Return user data (WITHOUT password hash)
+
+        // Prepare user data (never send password hash to client!)
         const userData = {
             user_id: user.user_id,
             email: user.email,
@@ -161,20 +140,12 @@ const login = async (req, res) => {
             address: user.address,
             created_at: user.created_at
         };
-        
-        res.status(200).json({
-            success: true,
-            message: 'Login successful',
-            data: userData
-        });
-        
+
+        return sendSuccess(res, userData, 'Login successful');
+
     } catch (error) {
         console.error('Error in login:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error logging in',
-            error: error.message
-        });
+        return sendError(res, 'Error logging in', 500, error);
     }
 };
 
@@ -221,39 +192,26 @@ const getCurrentUser = async (req, res) => {
     try {
         // Check if user is logged in
         if (!req.session.userId) {
-            return res.status(401).json({
-                success: false,
-                message: 'Not authenticated'
-            });
+            return sendUnauthorized(res, 'Not authenticated');
         }
-        
-        // Get user data
+
+        // Get user data from database
         const user = await database.get(
             'SELECT user_id, email, full_name, phone, address, created_at, last_login FROM users WHERE user_id = ? AND is_active = TRUE',
             [req.session.userId]
         );
-        
+
+        // If user not found or inactive, clear the session
         if (!user) {
-            // User not found or inactive, destroy session
             req.session.destroy();
-            return res.status(401).json({
-                success: false,
-                message: 'User not found'
-            });
+            return sendUnauthorized(res, 'User not found');
         }
-        
-        res.status(200).json({
-            success: true,
-            data: user
-        });
-        
+
+        return sendSuccess(res, user);
+
     } catch (error) {
         console.error('Error in getCurrentUser:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error getting user information',
-            error: error.message
-        });
+        return sendError(res, 'Error getting user information', 500, error);
     }
 };
 

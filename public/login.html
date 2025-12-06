@@ -7,32 +7,66 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Enhanced Header -->
+    <!-- Header with navigation, search, account, and cart -->
     <header class="main-header">
         <div class="header-container">
-            <div class="logo">
+            <div class="header-logo">
                 <a href="index.html">
                     <img src="img/logotipo.png" alt="Multi Store Eletro Logo" />
                 </a>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="products.html">Products</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
+
+            <div class="header-search">
+                <form class="search-form" onsubmit="handleSearch(event)">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search for products..." autocomplete="off">
+                    <button type="submit" class="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </form>
+                <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
+            </div>
+
             <div class="header-actions">
                 <div class="account-menu">
-                    <button class="account-btn" id="accountBtn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="account-btn" id="accountBtn" onclick="toggleAccountMenu()">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        <span id="accountText">Account</span>
+                        <div class="account-info">
+                            <span class="account-greeting">Hello</span>
+                            <span class="account-name" id="accountName">Sign In</span>
+                        </div>
                     </button>
+
+                    <div class="account-dropdown" id="accountDropdown">
+                        <div class="dropdown-nav-links">
+                            <a href="index.html" class="dropdown-item">Home</a>
+                            <a href="products.html" class="dropdown-item">Products</a>
+                            <a href="about.html" class="dropdown-item">About</a>
+                            <a href="contact.html" class="dropdown-item">Contact</a>
+                        </div>
+                        <div class="dropdown-divider"></div>
+
+                        <div id="loggedOutMenu">
+                            <a href="login.html" class="dropdown-btn primary">Sign In</a>
+                            <p class="dropdown-text">New customer? <a href="register.html">Start here</a></p>
+                        </div>
+                        <div id="loggedInMenu" style="display: none;">
+                            <div class="dropdown-user">
+                                <strong id="userName">User Name</strong>
+                                <span id="userEmail">user@example.com</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="profile.html" class="dropdown-item">My Account</a>
+                            <a href="#" class="dropdown-item" onclick="handleLogout(event)">Sign Out</a>
+                        </div>
+                    </div>
                 </div>
+
                 <a href="cart.html" class="cart-btn">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="9" cy="21" r="1"></circle>
@@ -40,9 +74,20 @@
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                     </svg>
                     <span class="cart-badge" id="cartBadge">0</span>
-                    <span class="cart-text">Cart</span>
+                    <div class="cart-info">
+                        <span class="cart-greeting">Cart</span>
+                        <span class="cart-count" id="cartCount">0 items</span>
+                    </div>
                 </a>
             </div>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
         </div>
     </header>
 
@@ -598,5 +643,10 @@
             }
         }
     </style>
+
+    <!-- Load utility functions (includes shared helpers) -->
+    <script src="js/utils.js"></script>
+    <!-- Load header functionality (handles auth, cart, search) -->
+    <script src="header-script.js"></script>
 </body>
 </html>

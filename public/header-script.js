@@ -1,48 +1,10 @@
 /**
  * REUSABLE HEADER SCRIPT
  * Purpose: Handles authentication, cart count, search, and header interactions
+ * Note: This script is loaded on every page to manage the header
  */
 
-const API_BASE_URL = 'http://localhost:3000/api';
 let searchTimeout;
-
-/**
- * Extract products array from any API response format
- */
-function extractProductsArray(response) {
-    console.log('Header: Extracting products from response');
-    
-    if (Array.isArray(response)) {
-        return response;
-    }
-    
-    if (response.data && Array.isArray(response.data)) {
-        return response.data;
-    }
-    
-    if (response.products && Array.isArray(response.products)) {
-        return response.products;
-    }
-    
-    if (response.data && response.data.products && Array.isArray(response.data.products)) {
-        return response.data.products;
-    }
-    
-    if (response.data && response.data.data && Array.isArray(response.data.data)) {
-        return response.data.data;
-    }
-    
-    if (response.data && typeof response.data === 'object') {
-        for (const key in response.data) {
-            if (Array.isArray(response.data[key])) {
-                return response.data[key];
-            }
-        }
-    }
-    
-    console.error('Header: Could not find products array');
-    return [];
-}
 
 // Initialize header on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -63,7 +25,7 @@ async function initializeHeader() {
  */
 async function checkAuthStatus() {
     try {
-        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        const response = await fetch(`${API_URL}/auth/me`, {
             credentials: 'include'
         });
 
@@ -123,7 +85,7 @@ function updateHeaderForLoggedOut() {
  */
 async function updateCartCount() {
     try {
-        const response = await fetch(`${API_BASE_URL}/cart/count`, {
+        const response = await fetch(`${API_URL}/cart/count`, {
             credentials: 'include'
         });
 
@@ -137,26 +99,13 @@ async function updateCartCount() {
                 badge.textContent = count;
                 badge.style.display = count > 0 ? 'flex' : 'none';
             }
-            
+
             if (countText) {
                 countText.textContent = count === 1 ? '1 item' : `${count} items`;
             }
         }
     } catch (error) {
         console.error('Error updating cart count:', error);
-    }
-}
-
-/**
- * Handle search form submission
- */
-function handleSearch(event) {
-    event.preventDefault();
-    const searchInput = document.getElementById('searchInput');
-    const query = searchInput.value.trim();
-
-    if (query) {
-        window.location.href = `products.html?search=${encodeURIComponent(query)}`;
     }
 }
 
@@ -193,13 +142,14 @@ function setupSearchListeners() {
 async function fetchSearchSuggestions(query) {
     try {
         const response = await fetch(
-            `${API_BASE_URL}/products?search=${encodeURIComponent(query)}&limit=5`,
+            `${API_URL}/products?search=${encodeURIComponent(query)}&limit=5`,
             { credentials: 'include' }
         );
 
         if (response.ok) {
             const data = await response.json();
-            const products = extractProductsArray(data);
+            // Use the global extractProductsArray from utils.js
+            const products = window.extractProductsArray(data);
             displaySearchSuggestions(products, query);
         }
     } catch (error) {
@@ -247,49 +197,6 @@ function hideSearchSuggestions() {
     }
 }
 
-/**
- * Toggle account dropdown menu
- */
-function toggleAccountMenu() {
-    const dropdown = document.getElementById('accountDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
-}
-
-/**
- * Toggle mobile navigation menu
- */
-function toggleMobileMenu() {
-    const nav = document.querySelector('.header-nav');
-    if (nav) {
-        nav.classList.toggle('mobile-open');
-    }
-}
-
-/**
- * Handle user logout
- */
-async function handleLogout(event) {
-    event.preventDefault();
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-
-        if (response.ok) {
-            window.location.href = 'index.html';
-        } else {
-            alert('Error logging out. Please try again.');
-        }
-    } catch (error) {
-        console.error('Logout error:', error);
-        alert('Error logging out. Please try again.');
-    }
-}
-
 // Close dropdowns when clicking outside
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.account-menu')) {
@@ -298,15 +205,11 @@ document.addEventListener('click', function(event) {
             dropdown.classList.remove('show');
         }
     }
-    
+
     if (!event.target.closest('.header-search')) {
         hideSearchSuggestions();
     }
 });
 
-// Export functions for global use
+// Export updateCartCount for use in other scripts
 window.updateCartCount = updateCartCount;
-window.handleSearch = handleSearch;
-window.toggleAccountMenu = toggleAccountMenu;
-window.toggleMobileMenu = toggleMobileMenu;
-window.handleLogout = handleLogout;

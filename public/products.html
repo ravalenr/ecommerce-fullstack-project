@@ -29,15 +29,6 @@
                 <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
             </div>
 
-            <nav class="header-nav">
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="products.html">Products</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
-
             <div class="header-actions">
                 <div class="account-menu">
                     <button class="account-btn" id="accountBtn" onclick="toggleAccountMenu()">
@@ -50,8 +41,17 @@
                             <span class="account-name" id="accountName">Sign In</span>
                         </div>
                     </button>
-                    
+
                     <div class="account-dropdown" id="accountDropdown">
+                        <!-- navigation links moved inside dropdown -->
+                        <div class="dropdown-nav-links">
+                            <a href="index.html" class="dropdown-item">Home</a>
+                            <a href="products.html" class="dropdown-item">Products</a>
+                            <a href="about.html" class="dropdown-item">About</a>
+                            <a href="contact.html" class="dropdown-item">Contact</a>
+                        </div>
+                        <div class="dropdown-divider"></div>
+
                         <div id="loggedOutMenu">
                             <a href="login.html" class="dropdown-btn primary">Sign In</a>
                             <p class="dropdown-text">New customer? <a href="register.html">Start here</a></p>
@@ -253,11 +253,12 @@
         <p>&copy; 2025 Multi Store Eletro - All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Load utilities first -->
+    <script src="js/utils.js"></script>
+    <!-- Load header functionality -->
     <script src="header-script.js"></script>
     <script>
-        const API_URL = window.API_BASE_URL || 'http://localhost:3000/api';
-
+        // Track all products and current filters
         let allProducts = [];
         let currentFilters = {
             search: '',
@@ -267,41 +268,6 @@
             dealsOnly: false,
             sortBy: ''
         };
-
-        /**
-         * Extract products array from any API response format
-         */
-        function extractProductsArray(response) {
-            console.log('Extracting products from API response');
-            
-            if (Array.isArray(response)) {
-                console.log('Found direct array:', response.length, 'items');
-                return response;
-            }
-            
-            if (response.data && Array.isArray(response.data)) {
-                console.log('Found array in response.data:', response.data.length, 'items');
-                return response.data;
-            }
-            
-            if (response.products && Array.isArray(response.products)) {
-                console.log('Found array in response.products:', response.products.length, 'items');
-                return response.products;
-            }
-            
-            if (response.data && response.data.products && Array.isArray(response.data.products)) {
-                console.log('Found array in response.data.products:', response.data.products.length, 'items');
-                return response.data.products;
-            }
-            
-            if (response.data && response.data.data && Array.isArray(response.data.data)) {
-                console.log('Found array in response.data.data:', response.data.data.length, 'items');
-                return response.data.data;
-            }
-            
-            console.error('Could not find products array in response:', response);
-            return [];
-        }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -349,9 +315,10 @@
 
         /**
          * Load products from API
+         * fetches all products then filters on client side
          */
         async function loadProducts() {
-            console.log('Loading products from API...');
+            console.log('Starting to load products from backend...');
             showLoading();
 
             try {
@@ -359,23 +326,31 @@
                     credentials: 'include'
                 });
 
-                console.log('API response status:', response.status);
+                console.log('Got response from server, status code:', response.status);
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('API response data:', data);
-                    
-                    // Extract products array using helper function
+                    console.log('Raw API data:', data);
+                    console.log('Data type:', typeof data);
+
+                    // get the actual products array from response
                     allProducts = extractProductsArray(data);
-                    
-                    console.log('Products loaded successfully:', allProducts.length, 'items');
+
+                    console.log('Successfully loaded', allProducts.length, 'products');
+
+                    // make sure we got products
+                    if (allProducts.length === 0) {
+                        console.warn('Warning: API returned 0 products');
+                    }
+
                     applyFiltersAndDisplay();
                 } else {
-                    console.error('API returned error status:', response.status);
+                    console.error('Server returned error status:', response.status);
                     showError();
                 }
             } catch (error) {
-                console.error('Error loading products:', error);
+                console.error('Failed to fetch products:', error);
+                console.error('Error details:', error.message);
                 showError();
             }
         }
@@ -539,6 +514,8 @@
                 resultsCount.textContent = `${products.length} product${products.length !== 1 ? 's' : ''} found`;
 
                 grid.innerHTML = products.map(product => createProductCard(product)).join('');
+                console.log('Grid HTML length:', grid.innerHTML.length);
+                console.log('Grid display:', grid.style.display);
             }
         }
 
@@ -550,9 +527,9 @@
             const price = parseFloat(product.price) || 0;
             const discount = parseFloat(product.discount_percentage) || 0;
             const discountedPrice = price - (price * discount / 100);
-            
+
             return `
-                <div class="product-card">
+                <div class="product-card is-visible">
                     <div class="product-image">
                         <img src="${product.image_url || 'img/default-product.png'}" 
                             alt="${product.product_name}"
@@ -592,32 +569,7 @@
             `;
         }
 
-        /**
-         * Add to cart
-         */
-        async function addToCart(productId) {
-            try {
-                const response = await fetch(`${API_URL}/cart/add`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ product_id: productId, quantity: 1 })
-                });
-
-                if (response.ok) {
-                    showNotification('Product added to cart!', 'success');
-                    if (window.updateCartCount) {
-                        updateCartCount();
-                    }
-                } else {
-                    const data = await response.json();
-                    showNotification(data.message || 'Error adding to cart', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification('Error adding to cart', 'error');
-            }
-        }
+        // addToCart is now in utils.js
 
         /**
          * Clear filters
@@ -688,31 +640,10 @@
             document.getElementById('errorState').style.display = 'flex';
         }
 
-        /**
-         * Show notification
-         */
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
+        // All the header functions (handleSearch, toggleAccountMenu, etc.) are now in utils.js
+        // showNotification and truncateText are also in utils.js
 
-            setTimeout(() => notification.classList.add('show'), 100);
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        /**
-         * Truncate text
-         */
-        function truncateText(text, maxLength) {
-            if (!text || text.length <= maxLength) return text || '';
-            return text.substring(0, maxLength) + '...';
-        }
-
-        // Header functions
+        // Override handleSearch for products page to work with filters
         function handleSearch(event) {
             event.preventDefault();
             const query = document.getElementById('searchInput').value.trim();
@@ -724,247 +655,7 @@
                 applyFiltersAndDisplay();
             }
         }
-
-        function toggleAccountMenu() {
-            const dropdown = document.getElementById('accountDropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('show');
-            }
-        }
-
-        function toggleMobileMenu() {
-            const nav = document.querySelector('.header-nav');
-            if (nav) {
-                nav.classList.toggle('mobile-open');
-            }
-        }
-
-        async function handleLogout(event) {
-            event.preventDefault();
-            try {
-                const response = await fetch(`${API_URL}/auth/logout`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                if (response.ok) {
-                    window.location.href = 'index.html';
-                }
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        }
-
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.account-menu')) {
-                const dropdown = document.getElementById('accountDropdown');
-                if (dropdown) {
-                    dropdown.classList.remove('show');
-                }
-            }
-        });
     </script>
 
-    <style>
-        /* Products page specific styles */
-        .results-header {
-            background: linear-gradient(135deg, #003366 0%, #004d99 100%);
-            color: white;
-            padding: 30px 20px;
-        }
-
-        .results-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .results-header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .results-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .clear-filters-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid white;
-            padding: 8px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-
-        .clear-filters-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .products-section {
-            padding: 40px 20px;
-        }
-
-        .products-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
-        }
-
-        .filters-sidebar {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            height: fit-content;
-            position: sticky;
-            top: 80px;
-        }
-
-        .filter-group {
-            margin-bottom: 30px;
-        }
-
-        .filter-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .filter-group h3 {
-            color: #003366;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .filter-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .filter-option {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .filter-option:hover {
-            color: #ff6600;
-        }
-
-        .filter-option input {
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .sort-select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        .sort-select:focus {
-            outline: none;
-            border-color: #003366;
-        }
-
-        .products-content {
-            min-height: 400px;
-        }
-
-        .loading-state,
-        .no-results,
-        .error-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            text-align: center;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #003366;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .no-results h3,
-        .error-state h3 {
-            color: #003366;
-            margin: 20px 0 10px;
-        }
-
-        .no-results p,
-        .error-state p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .btn-primary {
-            background-color: #ff6600;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-primary:hover {
-            background-color: #ff8533;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        /* Mobile responsive */
-        @media (max-width: 1024px) {
-            .products-container {
-                grid-template-columns: 1fr;
-            }
-
-            .filters-sidebar {
-                position: static;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .results-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 15px;
-            }
-        }
-    </style>
 </body>
 </html>

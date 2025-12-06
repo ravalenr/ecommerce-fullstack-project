@@ -64,14 +64,23 @@ const getAllProducts = async (req, res) => {
             params.push(parseInt(limit));
         }
         
-        const products = await database.query(sql, params);  
-        
-        console.log('Products fetched:', products.length);  // Debug log
-        
+        const products = await database.query(sql, params);
+
+        console.log('Products fetched:', products.length);
+
+        // convert string numbers to actual numbers
+        // mysql returns decimals as strings sometimes which messes up frontend
+        const fixedProducts = products.map(product => ({
+            ...product,
+            price: parseFloat(product.price),
+            discount_percentage: parseFloat(product.discount_percentage),
+            stock_quantity: parseInt(product.stock_quantity)
+        }));
+
         res.status(200).json({
             success: true,
-            count: products.length,
-            data: products
+            count: fixedProducts.length,
+            data: fixedProducts
         });
         
     } catch (error) {
@@ -112,15 +121,23 @@ const getProductById = async (req, res) => {
             });
         }
         
+        // fix the number types before sending
+        const fixedProduct = {
+            ...product,
+            price: parseFloat(product.price),
+            discount_percentage: parseFloat(product.discount_percentage),
+            stock_quantity: parseInt(product.stock_quantity)
+        };
+
         // Get additional images for this product
         const imagesSql = 'SELECT * FROM product_images WHERE product_id = ?';
         const images = await database.query(imagesSql, [id]);
-        
-        product.additional_images = images;
-        
+
+        fixedProduct.additional_images = images;
+
         res.status(200).json({
             success: true,
-            data: product
+            data: fixedProduct
         });
         
     } catch (error) {
@@ -427,11 +444,19 @@ const getFeaturedProducts = async (req, res) => {
         `;
         
         const products = await database.query(sql);
-        
+
+        // fix number types (same as getAllProducts)
+        const fixedProducts = products.map(product => ({
+            ...product,
+            price: parseFloat(product.price),
+            discount_percentage: parseFloat(product.discount_percentage),
+            stock_quantity: parseInt(product.stock_quantity)
+        }));
+
         res.status(200).json({
             success: true,
-            count: products.length,
-            data: products
+            count: fixedProducts.length,
+            data: fixedProducts
         });
         
     } catch (error) {
