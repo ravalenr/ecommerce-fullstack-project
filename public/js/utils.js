@@ -1,15 +1,15 @@
 /**
  * Frontend Utility Functions
  * Shared helper functions used across multiple pages
- * This prevents us from copying the same code everywhere
+ * Shared code to keep things DRY
  */
 
-// API base URL - change this if your backend runs on a different port
 const API_URL = window.API_BASE_URL || 'http://localhost:3000/api';
 
 /**
  * Extract products array from API response
- * Our backend sometimes wraps data differently, so this handles all cases
+ * 
+ * The API may return products in different structures depending on the endpoint
  *
  * Handles these formats:
  * - Direct array: [product1, product2]
@@ -25,12 +25,12 @@ function extractProductsArray(response) {
         return response;
     }
 
-    // Check for data property (most common case)
+    // Check for single wrapping
     if (response && response.data && Array.isArray(response.data)) {
         return response.data;
     }
 
-    // Check for products property (alternative format)
+    // Alternate data wrapping
     if (response && response.products && Array.isArray(response.products)) {
         return response.products;
     }
@@ -217,6 +217,42 @@ function debounce(func, delay) {
 
 // Export functions to window object so they can be used globally
 window.API_URL = API_URL;
+/**
+ * Change quantity for product card
+ * Used in product cards to increase/decrease quantity
+ */
+function changeQuantity(productId, change) {
+    const input = document.getElementById(`qty-${productId}`);
+    if (!input) return;
+
+    const currentValue = parseInt(input.value) || 1;
+    const max = parseInt(input.max) || 99;
+    const min = parseInt(input.min) || 1;
+
+    const newValue = currentValue + change;
+
+    if (newValue >= min && newValue <= max) {
+        input.value = newValue;
+    }
+}
+
+/**
+ * Add to cart with specified quantity from product card
+ * Gets quantity from input field and adds to cart
+ */
+async function addToCartWithQty(productId) {
+    const input = document.getElementById(`qty-${productId}`);
+    const quantity = input ? parseInt(input.value) || 1 : 1;
+
+    await addToCart(productId, quantity);
+
+    // Reset quantity to 1 after adding
+    if (input) {
+        input.value = 1;
+    }
+}
+
+// Export all functions to window object
 window.extractProductsArray = extractProductsArray;
 window.truncateText = truncateText;
 window.formatPrice = formatPrice;
@@ -229,3 +265,5 @@ window.toggleMobileMenu = toggleMobileMenu;
 window.handleLogout = handleLogout;
 window.getURLParameter = getURLParameter;
 window.debounce = debounce;
+window.changeQuantity = changeQuantity;
+window.addToCartWithQty = addToCartWithQty;

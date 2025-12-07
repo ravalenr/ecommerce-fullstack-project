@@ -1,6 +1,7 @@
 /**
  * Authentication Routes
- * Purpose: Define all authentication-related API endpoints
+ * 
+ * Define all authentication-related API endpoints
  * Base URL: /api/auth
  */
 

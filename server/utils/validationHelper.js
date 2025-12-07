@@ -1,7 +1,7 @@
 /**
  * Validation Helper
  * Common validation functions we use throughout the app
- * This keeps our code DRY (Don't Repeat Yourself)
+ * This keeps our code DRY and consistent
  */
 
 /**

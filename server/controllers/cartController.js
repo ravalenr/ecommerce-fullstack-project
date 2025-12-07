@@ -18,7 +18,7 @@ const getCart = async (req, res) => {
         
         // Build query based on user authentication status
         let sql = `
-            SELECT 
+            SELECT
                 c.cart_id,
                 c.product_id,
                 c.quantity,
@@ -28,18 +28,12 @@ const getCart = async (req, res) => {
                 p.discount_percentage,
                 p.stock_quantity,
                 p.description,
-                (p.price * c.quantity) as subtotal,
-                (p.price - (p.price * p.discount_percentage / 100)) as discounted_price,
-                ((p.price - (p.price * p.discount_percentage / 100)) * c.quantity) as discounted_subtotal,
-                COALESCE(pi.image_url, '/img/default-product.png') as image_url
+                p.image_url,
+                ROUND((p.price * c.quantity), 2) as subtotal,
+                ROUND((p.price - (p.price * p.discount_percentage / 100)), 2) as discounted_price,
+                ROUND(((p.price - (p.price * p.discount_percentage / 100)) * c.quantity), 2) as discounted_subtotal
             FROM cart_items c
             INNER JOIN products p ON c.product_id = p.product_id
-            LEFT JOIN (
-                SELECT product_id, MIN(image_url) as image_url
-                FROM product_images
-                WHERE is_primary = TRUE
-                GROUP BY product_id
-            ) pi ON p.product_id = pi.product_id
             WHERE p.is_active = TRUE
         `;
         
@@ -71,23 +65,29 @@ const getCart = async (req, res) => {
         
         sql += ' ORDER BY c.added_at DESC';
         
+        // ... inside getCart function (after database query)
+
         const cartItems = await database.query(sql, params);
         
         // Calculate cart summary
         const summary = {
             total_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-            subtotal: cartItems.reduce((sum, item) => sum + parseFloat(item.subtotal), 0),
+            
+            // ... inside getCart function (after database query)
+            subtotal: cartItems.reduce((sum, item) => sum + Number(item.subtotal), 0),
             discount_amount: cartItems.reduce((sum, item) => {
-                const discount = parseFloat(item.subtotal) - parseFloat(item.discounted_subtotal);
+                const discount = Number(item.subtotal) - Number(item.discounted_subtotal);
                 return sum + discount;
             }, 0),
-            total_amount: cartItems.reduce((sum, item) => sum + parseFloat(item.discounted_subtotal), 0)
+            total_amount: cartItems.reduce((sum, item) => sum + Number(item.discounted_subtotal), 0)
         };
         
-        // Round to 2 decimal places
+        // Round summary values to 2 decimal places
         summary.subtotal = Math.round(summary.subtotal * 100) / 100;
         summary.discount_amount = Math.round(summary.discount_amount * 100) / 100;
         summary.total_amount = Math.round(summary.total_amount * 100) / 100;
+
+// ...
         
         res.status(200).json({
             success: true,

@@ -165,8 +165,36 @@
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>About Us</h3>
+                    <p>Multi Store Eletro is your trusted destination for quality electronics and appliances. We offer the best products at competitive prices.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li>Email: info@multistore.com</li>
+                        <li>Phone: (555) 123-4567</li>
+                        <li>Address: 123 Tech Street, Dublin</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
     <script src="js/utils.js"></script>
@@ -231,16 +259,22 @@
             });
         }
 
+
         function createCartItemElement(item) {
             const div = document.createElement('div');
             div.className = 'cart-item';
             div.setAttribute('data-cart-id', item.cart_id);
 
-            const discountPrice = item.discount_percentage > 0 
-                ? item.price - (item.price * item.discount_percentage / 100)
-                : item.price;
+            // Price Calculations
+            const price = Number(item.price);
+            const discountedSubtotal = Number(item.discounted_subtotal);
 
-            // Note: Fixed image path handling
+            // Discounted Price Calculation
+            const discountPrice = item.discount_percentage > 0 
+                ? price - (price * item.discount_percentage / 100)
+                : price;
+
+            // Image Source Logic
             const imgSrc = item.image_url ? item.image_url : 'img/default-product.png';
 
             div.innerHTML = `
@@ -249,15 +283,14 @@
                     ${item.discount_percentage > 0 ? `<span class="item-discount-badge">${item.discount_percentage}% OFF</span>` : ''}
                 </div>
                 <div class="item-details">
-                    <h3 class="item-name">${item.product_name}</h3>
-                    <p class="item-stock">
+                    <h3 class="item-name">${item.product_name}</h3> <p class="item-stock">
                         ${item.stock_quantity > 0 
                             ? `<span class="in-stock">In Stock (${item.stock_quantity} available)</span>`
                             : '<span class="out-of-stock">Out of Stock</span>'}
                     </p>
                     <div class="item-price">
                         ${item.discount_percentage > 0 
-                            ? `<span class="price-original">$${item.price.toFixed(2)}</span>`
+                            ? `<span class="price-original">$${price.toFixed(2)}</span>` 
                             : ''}
                         <span class="price-current">$${discountPrice.toFixed(2)}</span>
                     </div>
@@ -272,7 +305,7 @@
                 </div>
                 <div class="item-total">
                     <span class="total-label">Total:</span>
-                    <span class="total-price">$${item.discounted_subtotal.toFixed(2)}</span>
+                    <span class="total-price">$${discountedSubtotal.toFixed(2)}</span>
                 </div>
                 <button class="item-remove" onclick="removeItem(${item.cart_id})" title="Remove item">Remove</button>
             `;

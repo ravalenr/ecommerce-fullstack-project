@@ -1,7 +1,9 @@
 /**
  * Authentication Middleware
- * Purpose: Protect routes that require user authentication
- * Usage: Add requireAuth to any route that needs a logged-in user
+ * 
+ * Protect routes that require user authentication
+ * 
+ * Add requireAuth to any route that needs a logged-in user
  */
 
 /**
@@ -10,8 +12,6 @@
  * If not authenticated, returns 401 error
  * If authenticated, allows request to proceed
  * 
- * @example
- * router.get('/protected-route', requireAuth, controller.method);
  */
 const requireAuth = (req, res, next) => {
     // Check if user session exists and has userId
@@ -33,9 +33,6 @@ const requireAuth = (req, res, next) => {
  * Sets req.currentUser for use in controllers
  * Useful for routes that work for both logged-in and guest users
  * 
- * @example
- * router.get('/optional-auth-route', optionalAuth, controller.method);
- * // In controller: if (req.currentUser) { ... }
  */
 const optionalAuth = (req, res, next) => {
     // Set current user if session exists
@@ -87,7 +84,7 @@ const isAuthenticated = (req) => {
  * router.post('/admin/users', requireAuth, requireAdmin, controller.method);
  */
 const requireAdmin = (req, res, next) => {
-    // TODO: Implement admin check when admin system is added
+    // TO-DO: Implement admin check when admin system is added
     // Check if user has admin role
     // if (req.session.userRole === 'admin') {
     //     next();
@@ -111,7 +108,7 @@ const requireAdmin = (req, res, next) => {
  * router.post('/login', rateLimitLogin, authController.login);
  */
 const rateLimitLogin = (req, res, next) => {
-    // TODO: Implement rate limiting
+    // TO-DO: Implement rate limiting
     // Track failed login attempts by IP
     // Block after X failed attempts
     // Reset after Y minutes

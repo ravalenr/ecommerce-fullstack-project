@@ -34,10 +34,14 @@ async function checkAuthStatus() {
             const userData = data.data || data;
             updateHeaderForLoggedIn(userData);
         } else {
+            // 401 is expected when user is not logged in - not an error
             updateHeaderForLoggedOut();
         }
     } catch (error) {
-        console.error('Error checking auth:', error);
+        // Only log actual network errors, not auth failures
+        if (error.message !== 'Failed to fetch') {
+            console.error('Error checking auth:', error);
+        }
         updateHeaderForLoggedOut();
     }
 }

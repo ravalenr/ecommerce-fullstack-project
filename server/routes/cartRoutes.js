@@ -10,22 +10,22 @@ const router = express.Router();
 const cartController = require('../controllers/cartController');
 const { optionalAuth } = require('../middleware/authMiddleware');
 
-// Apply optional auth to all routes - works for both logged-in users and guests
+// Apply optional authentication middleware
 router.use(optionalAuth);
 
 /**
  * @route   GET /api/cart
  * @desc    Get current user's cart with all items and summary
- * @access  Public (works for both guests and authenticated users)
+ * @access  Public 
  * @returns {items[], summary: {total_items, subtotal, discount_amount, total_amount}}
  */
 router.get('/', cartController.getCart);
 
 /**
  * @route   POST /api/cart/add
- * @desc    Add product to cart (creates new or increases quantity)
+ * @desc    Add product to cart
  * @body    {product_id: number, quantity: number (optional, default 1)}
- * @access  Public (works for both guests and authenticated users)
+ * @access  Public
  * @returns {cart_id, product_id, quantity, action: 'added'|'updated'}
  */
 router.post('/add', cartController.addToCart);
@@ -35,7 +35,7 @@ router.post('/add', cartController.addToCart);
  * @desc    Update cart item quantity
  * @params  cart_id - ID of cart item to update
  * @body    {quantity: number}
- * @access  Public (user must own the cart item)
+ * @access  Public 
  * @returns {cart_id, quantity, subtotal}
  */
 router.put('/update/:cart_id', cartController.updateCartItem);
@@ -44,23 +44,23 @@ router.put('/update/:cart_id', cartController.updateCartItem);
  * @route   DELETE /api/cart/remove/:cart_id
  * @desc    Remove item from cart
  * @params  cart_id - ID of cart item to remove
- * @access  Public (user must own the cart item)
+ * @access  Public 
  * @returns {success, message}
  */
 router.delete('/remove/:cart_id', cartController.removeCartItem);
 
 /**
  * @route   DELETE /api/cart/clear
- * @desc    Clear entire cart (remove all items)
- * @access  Public (clears current user's/guest's cart)
+ * @desc    Clear entire cart 
+ * @access  Public 
  * @returns {success, message}
  */
 router.delete('/clear', cartController.clearCart);
 
 /**
  * @route   GET /api/cart/count
- * @desc    Get total number of items in cart (for badge display)
- * @access  Public (works for both guests and authenticated users)
+ * @desc    Get total number of items in cart
+ * @access  Public 
  * @returns {count: number}
  */
 router.get('/count', cartController.getCartCount);
@@ -68,9 +68,9 @@ router.get('/count', cartController.getCartCount);
 /**
  * @route   GET /api/cart/validate
  * @desc    Validate cart items (check stock availability, active products)
- * @access  Public (validates current user's/guest's cart)
+ * @access  Public 
  * @returns {valid: boolean, issues: array}
- * @note    Useful before checkout to ensure all items are still available
+ * @note    Used before checkout to ensure cart integrity
  */
 router.get('/validate', cartController.validateCart);
 

@@ -9,3 +9,6 @@ node_modules/
 *.log  
 *.txt
 server/uploads/
+schemas/
+.gitignore
+

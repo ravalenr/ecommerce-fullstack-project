@@ -220,7 +220,7 @@
                 </div>
 
                 <!-- Products Grid -->
-                <div id="productsGrid" class="products-grid" style="display: none;"></div>
+                <div id="productsGrid" class="product-list" style="display: none;"></div>
 
                 <!-- No Results -->
                 <div id="noResults" class="no-results" style="display: none;">
@@ -257,8 +257,36 @@
     </a>
 
     <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 Multi Store Eletro - All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>About Us</h3>
+                    <p>Multi Store Eletro is your trusted destination for quality electronics and appliances. We offer the best products at competitive prices.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li>Email: info@multistore.com</li>
+                        <li>Phone: (555) 123-4567</li>
+                        <li>Address: 123 Tech Street, Dublin</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
     <!-- Load utilities first -->
@@ -537,18 +565,20 @@
             const discountedPrice = price - (price * discount / 100);
 
             return `
-                <div class="product-card is-visible">
-                    <div class="product-image">
-                        <img src="${product.image_url || 'img/default-product.png'}" 
+                <div class="product-list-item is-visible">
+                    <a href="product-details.html?id=${product.product_id}" class="product-image">
+                        <img src="${product.image_url || 'img/default-product.png'}"
                             alt="${product.product_name}"
                             onerror="this.src='img/default-product.png'">
                         ${discount > 0 ? `
                             <span class="product-badge hot-deal">${discount}% OFF</span>
                         ` : ''}
-                    </div>
-                    <div class="product-details">
-                        <h3 class="product-name">${product.product_name}</h3>
-                        <p class="product-description">${truncateText(product.description || '', 80)}</p>
+                    </a>
+                    <div class="product-info">
+                        <h3 class="product-name">
+                            <a href="product-details.html?id=${product.product_id}">${product.product_name}</a>
+                        </h3>
+                        <p class="product-description">${truncateText(product.description || '', 150)}</p>
                         <div class="product-price">
                             ${discount > 0 ? `
                                 <span class="price-original">$${price.toFixed(2)}</span>
@@ -558,20 +588,29 @@
                             `}
                         </div>
                         <div class="product-stock">
-                            ${product.stock_quantity > 0 
+                            ${product.stock_quantity > 0
                                 ? `<span class="in-stock">In Stock (${product.stock_quantity})</span>`
                                 : '<span class="out-of-stock">Out of Stock</span>'}
                         </div>
-                        <button class="add-to-cart-btn" 
-                                onclick="addToCart(${product.product_id})"
-                                ${product.stock_quantity === 0 ? 'disabled' : ''}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            ${product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-                        </button>
+                    </div>
+                    <div class="product-actions-inline">
+                        ${product.stock_quantity > 0 ? `
+                            <div class="quantity-selector-inline">
+                                <button type="button" class="qty-btn-inline" onclick="changeQuantity(${product.product_id}, -1)">-</button>
+                                <input type="number" id="qty-${product.product_id}" value="1" min="1" max="${product.stock_quantity}" readonly>
+                                <button type="button" class="qty-btn-inline" onclick="changeQuantity(${product.product_id}, 1)">+</button>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCartWithQty(${product.product_id})">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                Add to Cart
+                            </button>
+                        ` : `
+                            <button class="add-to-cart-btn" disabled>Out of Stock</button>
+                        `}
                     </div>
                 </div>
             `;
@@ -663,6 +702,8 @@
                 applyFiltersAndDisplay();
             }
         }
+
+        // Note: changeQuantity and addToCartWithQty functions are now in utils.js
     </script>
 
 </body>

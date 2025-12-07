@@ -60,22 +60,8 @@ function sendNotFound(res, message = 'Resource not found') {
 
 /**
  * Wrap async functions to catch errors automatically
- * This saves us from writing try-catch in every single function
+ * This prevents us from writing try-catch in every controller
  *
- * Example:
- * Instead of:
- *   const myFunction = async (req, res) => {
- *     try {
- *       // code here
- *     } catch (error) {
- *       res.status(500).json({ error: error.message });
- *     }
- *   }
- *
- * We can do:
- *   const myFunction = asyncHandler(async (req, res) => {
- *     // code here
- *   });
  */
 function asyncHandler(fn) {
     return (req, res, next) => {
