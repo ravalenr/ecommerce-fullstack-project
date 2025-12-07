@@ -1,15 +1,8 @@
-/**
- * Product Details Page JavaScript
- * Handles product display, image gallery, quantity controls, and add to cart
- */
-
 let currentProduct = null;
 let currentQuantity = 1;
 
-// Initialize page on load
 document.addEventListener('DOMContentLoaded', function() {
     const productId = getProductIdFromURL();
-
     if (productId) {
         loadProductDetails(productId);
     } else {
@@ -17,21 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-/**
- * Get product ID from URL query parameter
- */
 function getProductIdFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
 }
 
-/**
- * Load product details from API
- */
 async function loadProductDetails(productId) {
     try {
         showLoading();
-
         const response = await fetch(`${API_URL}/products/${productId}`, {
             credentials: 'include'
         });
@@ -45,37 +31,26 @@ async function loadProductDetails(productId) {
 
         displayProduct(currentProduct);
         loadRelatedProducts(currentProduct.category_id, currentProduct.product_id);
-
     } catch (error) {
         console.error('Error loading product:', error);
         showError();
     }
 }
 
-/**
- * Display product details on the page
- */
 function displayProduct(product) {
     hideLoading();
     document.getElementById('productContent').style.display = 'block';
-
-    // Update page title
     document.title = `${product.product_name} - Multi Store Eletro`;
-
-    // Update breadcrumb
     document.getElementById('breadcrumbProductName').textContent = product.product_name;
-
-    // Product name
     document.getElementById('productName').textContent = product.product_name;
 
-    // Category
     if (product.category_name) {
         document.getElementById('categoryTag').textContent = product.category_name;
     } else {
         document.getElementById('categoryTag').style.display = 'none';
     }
 
-    // Stock status
+    // Update stock status
     const stockStatus = document.getElementById('stockStatus');
     const stock = parseInt(product.stock_quantity) || 0;
 
@@ -95,34 +70,26 @@ function displayProduct(product) {
     // Pricing
     const price = parseFloat(product.price) || 0;
     const discount = parseFloat(product.discount_percentage) || 0;
-
     document.getElementById('currentPrice').textContent = `$${price.toFixed(2)}`;
 
     if (discount > 0) {
         const originalPrice = price / (1 - discount / 100);
         document.getElementById('originalPrice').textContent = `$${originalPrice.toFixed(2)}`;
         document.getElementById('originalPrice').style.display = 'inline';
-
         document.getElementById('discountBadge').textContent = `${discount}% OFF`;
         document.getElementById('discountBadge').style.display = 'inline-block';
     }
 
-    // Description
     document.getElementById('productDescription').textContent =
         product.description || 'No description available for this product.';
 
-    // Images
     setupImageGallery(product);
 }
 
-/**
- * Setup image gallery with main image and thumbnails
- */
 function setupImageGallery(product) {
     const mainImage = document.getElementById('mainImage');
     const thumbnailGallery = document.getElementById('thumbnailGallery');
 
-    // Main image
     const mainImageUrl = product.image_url || 'img/default-product.png';
     mainImage.src = mainImageUrl;
     mainImage.alt = product.product_name;
@@ -130,7 +97,6 @@ function setupImageGallery(product) {
         this.src = 'img/default-product.png';
     };
 
-    // Show discount badge on image if applicable
     const discount = parseFloat(product.discount_percentage) || 0;
     const badge = document.getElementById('productBadge');
 
@@ -139,10 +105,8 @@ function setupImageGallery(product) {
         badge.style.display = 'block';
     }
 
-    // Setup thumbnails
     const images = [mainImageUrl];
 
-    // Add additional images if available
     if (product.additional_images && Array.isArray(product.additional_images)) {
         product.additional_images.forEach(img => {
             if (img.image_url) {
@@ -151,7 +115,7 @@ function setupImageGallery(product) {
         });
     }
 
-    // Only show thumbnails if there are multiple images
+    // Only show gallery if multiple images
     if (images.length > 1) {
         thumbnailGallery.innerHTML = images.map((imgUrl, index) => `
             <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${imgUrl}', this)">
@@ -165,23 +129,16 @@ function setupImageGallery(product) {
     }
 }
 
-/**
- * Change main image when thumbnail is clicked
- */
 function changeMainImage(imageUrl, thumbnailElement) {
     const mainImage = document.getElementById('mainImage');
     mainImage.src = imageUrl;
 
-    // Update active thumbnail
     document.querySelectorAll('.thumbnail').forEach(thumb => {
         thumb.classList.remove('active');
     });
     thumbnailElement.classList.add('active');
 }
 
-/**
- * Increase quantity
- */
 function increaseQuantity() {
     const input = document.getElementById('quantity');
     const max = currentProduct ? parseInt(currentProduct.stock_quantity) : 99;
@@ -192,21 +149,14 @@ function increaseQuantity() {
     }
 }
 
-/**
- * Decrease quantity
- */
 function decreaseQuantity() {
     const input = document.getElementById('quantity');
-
     if (currentQuantity > 1) {
         currentQuantity--;
         input.value = currentQuantity;
     }
 }
 
-/**
- * Add product to cart
- */
 async function addToCart() {
     if (!currentProduct) {
         showNotification('Product not loaded', 'error');
@@ -231,9 +181,7 @@ async function addToCart() {
 
         const response = await fetch(`${API_URL}/cart/add`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({
                 product_id: currentProduct.product_id,
@@ -245,12 +193,9 @@ async function addToCart() {
 
         if (response.ok) {
             showNotification('Product added to cart!', 'success');
-
-            // Update cart count in header
             if (window.updateCartCount) {
                 await window.updateCartCount();
             }
-
             // Reset quantity
             currentQuantity = 1;
             document.getElementById('quantity').value = 1;
@@ -274,9 +219,6 @@ async function addToCart() {
     }
 }
 
-/**
- * Load related products from same category
- */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!categoryId) return;
 
@@ -290,8 +232,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 
         const data = await response.json();
         const products = window.extractProductsArray(data);
-
-        // Filter out current product
         const relatedProducts = products.filter(p => p.product_id !== excludeProductId);
 
         if (relatedProducts.length > 0) {
@@ -302,9 +242,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     }
 }
 
-/**
- * Display related products
- */
 function displayRelatedProducts(products) {
     const section = document.getElementById('relatedProductsSection');
     const grid = document.getElementById('relatedProductsGrid');
@@ -341,41 +278,27 @@ function displayRelatedProducts(products) {
     section.style.display = 'block';
 }
 
-/**
- * Show loading state
- */
 function showLoading() {
     document.getElementById('loadingState').style.display = 'block';
     document.getElementById('errorState').style.display = 'none';
     document.getElementById('productContent').style.display = 'none';
 }
 
-/**
- * Hide loading state
- */
 function hideLoading() {
     document.getElementById('loadingState').style.display = 'none';
 }
 
-/**
- * Show error state
- */
 function showError() {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('errorState').style.display = 'flex';
     document.getElementById('productContent').style.display = 'none';
 }
 
-/**
- * Show notification message
- */
 function showNotification(message, type = 'success') {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
 
-    // Style the notification
     notification.style.cssText = `
         position: fixed;
         top: 100px;
@@ -391,14 +314,12 @@ function showNotification(message, type = 'success') {
 
     document.body.appendChild(notification);
 
-    // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
-// Export functions for global use
 window.changeMainImage = changeMainImage;
 window.increaseQuantity = increaseQuantity;
 window.decreaseQuantity = decreaseQuantity;

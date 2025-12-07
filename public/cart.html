@@ -129,6 +129,30 @@
                         </div>
                     </div>
 
+                    <div id="checkoutModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+                        <div class="modal-content" style="background:white; margin:10% auto; padding:20px; max-width:500px; border-radius:8px;">
+                            <h2>Checkout</h2>
+                            <form id="checkoutForm">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="orderName" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="orderEmail" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea id="orderAddress" required class="form-control"></textarea>
+                                </div>
+                                <div class="form-actions" style="margin-top:20px;">
+                                    <button type="submit" class="btn-primary">Place Order</button>
+                                    <button type="button" onclick="document.getElementById('checkoutModal').style.display='none'">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                     <div class="cart-summary-section">
                         <div class="cart-summary">
                             <h2>Order Summary</h2>
@@ -361,8 +385,41 @@
         }
 
         function proceedToCheckout() {
-            window.location.href = 'contact.html';
+            // Show the modal instead of redirecting
+            document.getElementById('checkoutModal').style.display = 'block';
+
         }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const orderData = {
+                full_name: document.getElementById('orderName').value,
+                customer_email: document.getElementById('orderEmail').value,
+                shipping_address: document.getElementById('orderAddress').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Order placed successfully! Order ID: ' + result.data.orderId);
+                    window.location.href = 'index.html'; // TO-DO: Redirect to order confirmation page if exists
+                } else {
+                    alert(result.message || 'Failed to place order');
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('An error occurred');
+            }
+        });
 
         async function checkLocalAuth() {
             try {

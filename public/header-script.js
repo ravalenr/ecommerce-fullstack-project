@@ -1,54 +1,33 @@
-/**
- * REUSABLE HEADER SCRIPT
- * Purpose: Handles authentication, cart count, search, and header interactions
- * Note: This script is loaded on every page to manage the header
- */
-
 let searchTimeout;
 
-// Initialize header on page load
 document.addEventListener('DOMContentLoaded', function() {
     initializeHeader();
     setupSearchListeners();
 });
 
-/**
- * Initialize header - check auth and update cart
- */
+// Initialize header on page load
 async function initializeHeader() {
     await checkAuthStatus();
     await updateCartCount();
 }
 
-/**
- * Check authentication status and update UI
- */
 async function checkAuthStatus() {
     try {
-        const response = await fetch(`${API_URL}/auth/me`, {
-            credentials: 'include'
-        });
-
+        const response = await fetch(`${API_URL}/auth/me`, { credentials: 'include' });
         if (response.ok) {
             const data = await response.json();
-            const userData = data.data || data;
-            updateHeaderForLoggedIn(userData);
+            updateHeaderForLoggedIn(data.data || data);
         } else {
-            // 401 is expected when user is not logged in - not an error
             updateHeaderForLoggedOut();
         }
     } catch (error) {
-        // Only log actual network errors, not auth failures
         if (error.message !== 'Failed to fetch') {
-            console.error('Error checking auth:', error);
+            console.error('Auth check error:', error);
         }
         updateHeaderForLoggedOut();
     }
 }
 
-/**
- * Update header UI for logged-in user
- */
 function updateHeaderForLoggedIn(userData) {
     const accountName = document.getElementById('accountName');
     const userName = document.getElementById('userName');
@@ -60,17 +39,13 @@ function updateHeaderForLoggedIn(userData) {
 
     const firstName = userData.full_name ? userData.full_name.split(' ')[0] : 'User';
     accountName.textContent = firstName;
-    
+
     if (userName) userName.textContent = userData.full_name || 'User';
     if (userEmail) userEmail.textContent = userData.email || '';
-    
     if (loggedInMenu) loggedInMenu.style.display = 'block';
     if (loggedOutMenu) loggedOutMenu.style.display = 'none';
 }
 
-/**
- * Update header UI for logged-out user
- */
 function updateHeaderForLoggedOut() {
     const accountName = document.getElementById('accountName');
     const loggedInMenu = document.getElementById('loggedInMenu');
@@ -79,20 +54,13 @@ function updateHeaderForLoggedOut() {
     if (!accountName) return;
 
     accountName.textContent = 'Sign In';
-    
     if (loggedInMenu) loggedInMenu.style.display = 'none';
     if (loggedOutMenu) loggedOutMenu.style.display = 'block';
 }
 
-/**
- * Update cart count badge
- */
 async function updateCartCount() {
     try {
-        const response = await fetch(`${API_URL}/cart/count`, {
-            credentials: 'include'
-        });
-
+        const response = await fetch(`${API_URL}/cart/count`, { credentials: 'include' });
         if (response.ok) {
             const data = await response.json();
             const badge = document.getElementById('cartBadge');
@@ -109,25 +77,22 @@ async function updateCartCount() {
             }
         }
     } catch (error) {
-        console.error('Error updating cart count:', error);
+        console.error('Cart count error:', error);
     }
 }
 
-/**
- * Setup search input listeners for suggestions
- */
+// Setup search with debounce
 function setupSearchListeners() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
-    
+
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
         const query = this.value.trim();
 
         if (query.length >= 2) {
-            searchTimeout = setTimeout(() => {
-                fetchSearchSuggestions(query);
-            }, 300);
+            // Debounce to avoid excessive API calls
+            searchTimeout = setTimeout(() => fetchSearchSuggestions(query), 300);
         } else {
             hideSearchSuggestions();
         }
@@ -140,9 +105,6 @@ function setupSearchListeners() {
     });
 }
 
-/**
- * Fetch search suggestions from API
- */
 async function fetchSearchSuggestions(query) {
     try {
         const response = await fetch(
@@ -152,23 +114,19 @@ async function fetchSearchSuggestions(query) {
 
         if (response.ok) {
             const data = await response.json();
-            // Use the global extractProductsArray from utils.js
             const products = window.extractProductsArray(data);
             displaySearchSuggestions(products, query);
         }
     } catch (error) {
-        console.error('Error fetching suggestions:', error);
+        console.error('Suggestions error:', error);
         hideSearchSuggestions();
     }
 }
 
-/**
- * Display search suggestions dropdown
- */
 function displaySearchSuggestions(products, query) {
     const suggestionsDiv = document.getElementById('searchSuggestions');
     if (!suggestionsDiv) return;
-    
+
     if (!Array.isArray(products) || products.length === 0) {
         suggestionsDiv.innerHTML = '<div class="suggestion-item no-results">No products found</div>';
     } else {
@@ -176,7 +134,7 @@ function displaySearchSuggestions(products, query) {
             const price = parseFloat(product.price) || 0;
             return `
                 <a href="products.html?search=${encodeURIComponent(query)}" class="suggestion-item">
-                    <img src="${product.image_url || 'img/default-product.png'}" 
+                    <img src="${product.image_url || 'img/default-product.png'}"
                          alt="${product.product_name}"
                          onerror="this.src='img/default-product.png'">
                     <div class="suggestion-info">
@@ -191,23 +149,15 @@ function displaySearchSuggestions(products, query) {
     suggestionsDiv.style.display = 'block';
 }
 
-/**
- * Hide search suggestions dropdown
- */
 function hideSearchSuggestions() {
     const suggestionsDiv = document.getElementById('searchSuggestions');
-    if (suggestionsDiv) {
-        suggestionsDiv.style.display = 'none';
-    }
+    if (suggestionsDiv) suggestionsDiv.style.display = 'none';
 }
 
-// Close dropdowns when clicking outside
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.account-menu')) {
         const dropdown = document.getElementById('accountDropdown');
-        if (dropdown) {
-            dropdown.classList.remove('show');
-        }
+        if (dropdown) dropdown.classList.remove('show');
     }
 
     if (!event.target.closest('.header-search')) {
@@ -215,39 +165,23 @@ document.addEventListener('click', function(event) {
     }
 });
 
-/**
- * Toggle mobile navigation menu
- */
 function toggleMobileMenu() {
-    console.log('toggleMobileMenu called');
     const mainNav = document.getElementById('mainNav');
     const overlay = document.getElementById('pageOverlay');
     const body = document.body;
-
-    console.log('mainNav:', mainNav);
-    console.log('overlay:', overlay);
 
     if (mainNav && overlay) {
         mainNav.classList.toggle('active');
         overlay.classList.toggle('active');
         body.classList.toggle('no-scroll');
-        console.log('Mobile menu toggled - active:', mainNav.classList.contains('active'));
-    } else {
-        console.error('Missing elements - mainNav or overlay not found');
     }
 }
 
-/**
- * Toggle account dropdown menu
- */
 function toggleAccountMenu() {
     const dropdown = document.getElementById('accountDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
+    if (dropdown) dropdown.classList.toggle('show');
 }
 
-// Close mobile menu when clicking overlay
 document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('pageOverlay');
     if (overlay) {
@@ -264,7 +198,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Export functions for global use
 window.toggleMobileMenu = toggleMobileMenu;
 window.toggleAccountMenu = toggleAccountMenu;
 window.updateCartCount = updateCartCount;
