@@ -1,3 +1,9 @@
+/*
+    * Order Routes
+    * Define routes for order operations
+    * Create order from cart items
+*/
+
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/orderController');

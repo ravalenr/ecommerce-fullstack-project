@@ -1,3 +1,8 @@
+/**
+ * Validation Helper
+ * Functions to validate and sanitize input data
+ * Email validation, password strength, required fields
+ */
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function isValidEmail(email) {
@@ -17,6 +22,7 @@ function sanitizeEmail(email) {
     return email ? email.toLowerCase().trim() : '';
 }
 
+// Exporting validation helper functions
 module.exports = {
     isValidEmail,
     isValidPassword,

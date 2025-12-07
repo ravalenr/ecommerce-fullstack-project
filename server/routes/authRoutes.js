@@ -1,3 +1,8 @@
+/*
+    * Auth Routes
+    * Purpose: Define authentication-related routes
+    * User registration, login, logout, profile management
+*/
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
@@ -13,4 +18,5 @@ router.put('/change-password', requireAuth, authController.changePassword);
 router.get('/status', authController.checkAuthStatus);
 router.post('/upload-avatar', requireAuth, upload.single('avatar'), authController.uploadAvatar);
 
+// Export the router
 module.exports = router;

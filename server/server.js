@@ -1,3 +1,10 @@
+/**
+ * Main Server File
+ * Set up Express server with middleware, routes, and error handling
+ * Initialize database connection
+ * Serve static files and handle SPA routing
+ * Start server on specified port
+ */
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -40,6 +47,7 @@ app.use(session({
     name: 'sessionId'
 }));
 
+// Serve static files
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -48,11 +56,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// Importing route modules
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
+// Mounting route modules
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
@@ -66,6 +76,7 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// SPA routing - serve index.html for specific routes
 const pages = ['/', '/about', '/products', '/contact', '/login', '/register', '/profile', '/cart'];
 pages.forEach(route => {
     app.get(route, (req, res) => {
@@ -74,9 +85,12 @@ pages.forEach(route => {
     });
 });
 
+// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 
+
+// Start the server
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
@@ -86,5 +100,6 @@ const server = app.listen(PORT, () => {
 process.on('SIGTERM', () => {
     server.close(() => console.log('Server closed'));
 });
+
 
 module.exports = app;

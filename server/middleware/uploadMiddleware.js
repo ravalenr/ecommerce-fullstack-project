@@ -1,7 +1,7 @@
 /**
  * Upload Middleware
- * Purpose: Handle file uploads using multer
- * Supports: Profile image uploads
+ * Handle file uploads using multer
+ * Profile image uploads
  */
 
 const multer = require('multer');

@@ -1,3 +1,9 @@
+/*
+    * Product Routes
+    * Define routes for product operations
+    * Get all products, get featured products, get categories, get product by ID, create, update, delete product
+*/
+
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');

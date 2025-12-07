@@ -1,5 +1,3 @@
-README.md
-docs/
 .DS_Store
 node_modules/
 .env   
@@ -8,7 +6,5 @@ dist/
 node_modules/
 *.log  
 *.txt
-server/uploads/
-schemas/
 .gitignore
 

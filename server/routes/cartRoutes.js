@@ -1,3 +1,9 @@
+/*
+    * Cart Routes
+    * Define routes for cart operations
+    * Get cart, add item, update item, remove item, clear cart, get cart count, validate cart
+*/
+
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
