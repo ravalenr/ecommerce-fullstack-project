@@ -8,6 +8,8 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { requireAuth } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware'); // Import the new middleware
+
 
 /**
  * @route   POST /api/auth/register
@@ -61,5 +63,12 @@ router.put('/change-password', requireAuth, authController.changePassword);
  * @access  Public
  */
 router.get('/status', authController.checkAuthStatus);
+
+/**
+ * @route   POST /api/auth/upload-avatar
+ * @desc    Upload user profile picture
+ * @access  Private
+ */
+router.post('/upload-avatar', requireAuth, upload.single('avatar'), authController.uploadAvatar);
 
 module.exports = router;

@@ -138,9 +138,10 @@ const login = async (req, res) => {
             full_name: user.full_name,
             phone: user.phone,
             address: user.address,
+            profile_image: user.profile_image,
             created_at: user.created_at
         };
-
+        
         return sendSuccess(res, userData, 'Login successful');
 
     } catch (error) {
@@ -197,7 +198,7 @@ const getCurrentUser = async (req, res) => {
 
         // Get user data from database
         const user = await database.get(
-            'SELECT user_id, email, full_name, phone, address, created_at, last_login FROM users WHERE user_id = ? AND is_active = TRUE',
+            'SELECT user_id, email, full_name, phone, address, profile_image, created_at, last_login FROM users WHERE user_id = ? AND is_active = TRUE',
             [req.session.userId]
         );
 
@@ -426,6 +427,49 @@ const checkAuthStatus = async (req, res) => {
     }
 };
 
+
+/**
+ * Upload Profile Picture
+ * @route POST /api/auth/upload-avatar
+ */
+const uploadAvatar = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No image file uploaded'
+            });
+        }
+
+        const userId = req.session.userId;
+        
+        // Construct the relative path to store in DB
+        const relativePath = `/uploads/profiles/${req.file.filename}`;
+
+        // Update User in Database
+        const sql = 'UPDATE users SET profile_image = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?';
+        
+        await database.run(sql, [relativePath, userId]);
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile picture updated successfully',
+            data: {
+                image_url: relativePath
+            }
+        });
+
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error uploading image',
+            error: error.message
+        });
+    }
+};
+
+
 module.exports = {
     register,
     login,
@@ -433,5 +477,7 @@ module.exports = {
     getCurrentUser,
     updateProfile,
     changePassword,
-    checkAuthStatus
+    checkAuthStatus,
+    uploadAvatar
 };
+

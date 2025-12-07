@@ -211,5 +211,56 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Export updateCartCount for use in other scripts
+/**
+ * Toggle mobile navigation menu
+ */
+function toggleMobileMenu() {
+    console.log('toggleMobileMenu called');
+    const mainNav = document.getElementById('mainNav');
+    const overlay = document.getElementById('pageOverlay');
+    const body = document.body;
+
+    console.log('mainNav:', mainNav);
+    console.log('overlay:', overlay);
+
+    if (mainNav && overlay) {
+        mainNav.classList.toggle('active');
+        overlay.classList.toggle('active');
+        body.classList.toggle('no-scroll');
+        console.log('Mobile menu toggled - active:', mainNav.classList.contains('active'));
+    } else {
+        console.error('Missing elements - mainNav or overlay not found');
+    }
+}
+
+/**
+ * Toggle account dropdown menu
+ */
+function toggleAccountMenu() {
+    const dropdown = document.getElementById('accountDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Close mobile menu when clicking overlay
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('pageOverlay');
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            const mainNav = document.getElementById('mainNav');
+            const body = document.body;
+
+            if (mainNav && mainNav.classList.contains('active')) {
+                mainNav.classList.remove('active');
+                overlay.classList.remove('active');
+                body.classList.remove('no-scroll');
+            }
+        });
+    }
+});
+
+// Export functions for global use
+window.toggleMobileMenu = toggleMobileMenu;
+window.toggleAccountMenu = toggleAccountMenu;
 window.updateCartCount = updateCartCount;

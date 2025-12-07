@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Multi Store Eletro</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
+    <div class="overlay" id="pageOverlay"></div>
+
     <!-- Fixed WhatsApp contact button -->
-    <a href="https://api.whatsapp.com/send?phone=5511991215175&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos!" 
-       class="whatsapp-float" 
-       target="_blank" 
+    <a href="https://api.whatsapp.com/send?phone=5511991215175&text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos!"
+       class="whatsapp-float"
+       target="_blank"
        title="Contact us on WhatsApp">
         <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="50">
     </a>
@@ -19,11 +21,39 @@
     <!-- Header with navigation, search, account, and cart -->
     <header class="main-header">
         <div class="header-container">
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()" aria-label="Open Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+
             <div class="header-logo">
                 <a href="index.html">
                     <img src="img/logotipo.png" alt="Multi Store Eletro Logo" />
                 </a>
             </div>
+
+            <nav class="main-nav" id="mainNav">
+                <div class="mobile-search">
+                    <form class="search-form" onsubmit="handleSearch(event)">
+                        <input type="text" class="search-input" placeholder="Search for products..." autocomplete="off">
+                        <button type="submit" class="search-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link">Products</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="login.html" class="nav-link" id="mobileAuthLink" style="display: none;">Sign In</a>
+            </nav>
 
             <div class="header-search">
                 <form class="search-form" onsubmit="handleSearch(event)">
@@ -52,25 +82,11 @@
                     </button>
 
                     <div class="account-dropdown" id="accountDropdown">
-                        <!-- Navigation links inside dropdown -->
-                        <div class="dropdown-nav-links">
-                            <a href="index.html" class="dropdown-item">Home</a>
-                            <a href="products.html" class="dropdown-item">Products</a>
-                            <a href="about.html" class="dropdown-item">About</a>
-                            <a href="contact.html" class="dropdown-item">Contact</a>
-                        </div>
-                        <div class="dropdown-divider"></div>
-
                         <div id="loggedOutMenu">
-                            <a href="login.html" class="dropdown-btn primary">Sign In</a>
-                            <p class="dropdown-text">New customer? <a href="register.html">Start here</a></p>
+                            <a href="login.html" class="dropdown-item">Sign In</a>
+                            <a href="register.html" class="dropdown-item">Register</a>
                         </div>
                         <div id="loggedInMenu" style="display: none;">
-                            <div class="dropdown-user">
-                                <strong id="userName">User Name</strong>
-                                <span id="userEmail">user@example.com</span>
-                            </div>
-                            <div class="dropdown-divider"></div>
                             <a href="profile.html" class="dropdown-item">My Account</a>
                             <a href="#" class="dropdown-item" onclick="handleLogout(event)">Sign Out</a>
                         </div>
@@ -90,14 +106,6 @@
                     </div>
                 </a>
             </div>
-
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
         </div>
     </header>
 

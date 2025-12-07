@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Multi Store Eletro</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-logo">
+                <a href="index.html"><img src="img/logotipo.png" alt="Logo" /></a>
+            </div>
+            <div class="header-actions">
+                 <a href="index.html" class="cart-btn">Back to Home</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="section" style="background-color: #f9f9f9; min-height: 80vh;">
+        <div class="profile-layout">
+            
+            <aside class="profile-sidebar">
+                <div class="avatar-container">
+                    <img src="img/default-avatar.png" alt="Profile Picture" id="profileImage" class="profile-avatar" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                    
+                    <button class="avatar-upload-btn" onclick="document.getElementById('fileInput').click()" title="Change Photo">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </button>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                </div>
+
+                <h2 id="displayFullName" class="profile-name">Loading...</h2>
+                <p id="displayEmail" class="profile-email">user@example.com</p>
+                
+                <div class="member-since">
+                    Member since: <span id="displayJoinDate">...</span>
+                </div>
+            </aside>
+
+            <div class="profile-content">
+                
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Personal Information
+                        </h2>
+                    </div>
+                    <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fullNameInput" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phoneInput" placeholder="Add phone number">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Delivery Address</label>
+                                <textarea id="addressInput" rows="3" placeholder="Add delivery address"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </form>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            Security
+                        </h2>
+                    </div>
+                    <form id="passwordForm" onsubmit="handleChangePassword(event)">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>Current Password</label>
+                                <input type="password" id="currentPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" id="newPassword" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" id="confirmNewPassword" required minlength="6">
+                            </div>
+                        </div>
+                        <button type="submit" class="save-btn" style="background-color: #d32f2f;">Change Password</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Multi Store Eletro. All rights reserved.</p>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="header-script.js"></script>
+    <script>
+        // Use API_URL from utils.js
+        const SERVER_BASE = 'http://localhost:3000'; 
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+
+        // 1. LOAD PROFILE DATA
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, { credentials: 'include' });
+                if (response.ok) {
+                    const data = await response.json();
+                    const user = data.data || data;
+                    
+                    // Populate Sidebar
+                    document.getElementById('displayFullName').textContent = user.full_name;
+                    document.getElementById('displayEmail').textContent = user.email;
+                    
+                    // Format Date
+                    if(user.created_at) {
+                        const date = new Date(user.created_at);
+                        document.getElementById('displayJoinDate').textContent = date.toLocaleDateString();
+                    }
+
+                    // Populate Image
+                    if (user.profile_image) {
+                        const imageUrl = user.profile_image.startsWith('http') 
+                            ? user.profile_image 
+                            : `${SERVER_BASE}${user.profile_image}`;
+                        document.getElementById('profileImage').src = `${imageUrl}?t=${new Date().getTime()}`;
+                    }
+
+                    // Populate Form Inputs
+                    document.getElementById('fullNameInput').value = user.full_name || '';
+                    document.getElementById('phoneInput').value = user.phone || '';
+                    document.getElementById('addressInput').value = user.address || '';
+
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('Error loading profile', 'error');
+            }
+        }
+
+        // 2. HANDLE IMAGE UPLOAD
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('avatar', file); 
+
+            try {
+                showNotification('Uploading image...', 'info');
+                const response = await fetch(`${API_URL}/auth/upload-avatar`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData 
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const profileImg = document.getElementById('profileImage');
+                    profileImg.src = `${SERVER_BASE}${result.data.image_url}?t=${new Date().getTime()}`;
+                    showNotification('Profile picture updated!', 'success');
+                } else {
+                    showNotification(result.message || 'Upload failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Server error during upload', 'error');
+            }
+        }
+
+        // 3. HANDLE PROFILE INFO UPDATE
+        async function handleProfileUpdate(event) {
+            event.preventDefault();
+            
+            const userData = {
+                full_name: document.getElementById('fullNameInput').value,
+                phone: document.getElementById('phoneInput').value,
+                address: document.getElementById('addressInput').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/auth/profile`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(userData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showNotification('Profile updated successfully!', 'success');
+                    // Update the display name in the sidebar immediately
+                    document.getElementById('displayFullName').textContent = userData.full_name;
+                    // Update header name too
+                    if(document.getElementById('accountName')) {
+                         document.getElementById('accountName').textContent = userData.full_name.split(' ')[0];
+                    }
+                } else {
+                    showNotification(result.message || 'Update failed', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('Error updating profile', 'error');
+            }
+        }
+
+        // 4. HANDLE PASSWORD CHANGE
+        async function handleChangePassword(event) {
+            event.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (newPassword !== confirmNewPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/change-password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showNotification('Password changed successfully!', 'success');
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    showNotification(result.message || 'Failed to change password', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('Error changing password', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
