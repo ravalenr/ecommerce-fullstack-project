@@ -37,7 +37,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Se o teu index.html estiver dentro de 'public', usa isto:
           path: './public'
 
       - name: Deploy to GitHub Pages
