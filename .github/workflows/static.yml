@@ -51,7 +51,7 @@ jobs:
         with:
           # ATENÇÃO: Se o build gera a pasta 'dist', usa './dist'
           # Se gera 'build', usa './build'
-          path: './build' 
+          path: './dist' 
 
       - name: Deploy to GitHub Pages
         id: deployment
