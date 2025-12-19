@@ -31,27 +31,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Ou a versão que usas
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build # Este comando gera a pasta dist ou build
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # ATENÇÃO: Se o build gera a pasta 'dist', usa './dist'
-          # Se gera 'build', usa './build'
-          path: './dist' 
+          # Se o teu index.html estiver dentro de 'public', usa isto:
+          path: './public'
 
       - name: Deploy to GitHub Pages
         id: deployment
